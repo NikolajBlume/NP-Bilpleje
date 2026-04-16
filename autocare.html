@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AutoCare Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- ════════════════════════════════════════
+  INDSÆT DINE FIREBASE VÆRDIER HER
+  (se README.md for vejledning)
+════════════════════════════════════════ -->
+<script>
+  const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyAHpcIdS-vWSY9GN4lpGCNlOtBX3c2z3Mk",
+    authDomain:        "np-bilpleje.firebaseapp.com",
+    projectId:         "np-bilpleje",
+    storageBucket:     "np-bilpleje.firebasestorage.app",
+    messagingSenderId: "966440928942",
+    appId:             "1:966440928942:web:e2d5f03c14c756e4384f3f"
+  };
+</script>
+
+<style>
+:root{
+  --bg:#0a0a0c;--surface:#111114;--card:#16161a;--border:#222228;
+  --accent:#e8b84b;--accent2:#c9973a;--text:#f0f0f0;--muted:#777;
+  --green:#2ecc71;--red:#e74c3c;--blue:#3498db;--purple:#8b85ff;
+  --bottom-h:64px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+body{padding-bottom:env(safe-area-inset-bottom);}
+
+/* ── TOP NAV ── */
+.topnav{display:none;align-items:center;gap:8px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;position:sticky;top:0;z-index:90;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);letter-spacing:2px;margin-right:24px;white-space:nowrap;}
+.dtab{padding:7px 16px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;}
+.dtab.active{background:var(--accent);color:#000;}
+.dtab:hover:not(.active){background:var(--border);color:var(--text);}
+
+/* ── BOTTOM NAV ── */
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:90;background:var(--surface);border-top:1px solid var(--border);height:calc(var(--bottom-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);}
+.bnav-inner{display:flex;height:var(--bottom-h);}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:color .2s;padding:0;}
+.btab .bicon{font-size:22px;line-height:1;}
+.btab.active{color:var(--accent);}
+
+/* ── PAGES ── */
+.page{display:none;padding:20px 16px;max-width:1150px;margin:0 auto;padding-bottom:calc(var(--bottom-h) + 20px + env(safe-area-inset-bottom));}
+.page.active{display:block;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:16px;}
+h3{font-size:14px;font-weight:600;margin-bottom:10px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;line-height:1;}
+.stat-value.green{color:var(--green);}.stat-value.red{color:var(--red);}
+.stat-value.blue{color:var(--blue);}.stat-value.orange{color:var(--accent);}
+
+/* ── FORMS ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-full{grid-column:1/-1;}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;}
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:16px;transition:border .2s;outline:none;appearance:none;-webkit-appearance:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+select option{background:var(--surface);}
+textarea{resize:vertical;min-height:60px;font-size:15px;}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 18px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:44px;}
+.btn-primary{background:var(--accent);color:#000;}.btn-primary:active{background:var(--accent2);}
+.btn-success{background:var(--green);color:#000;}.btn-success:active{background:#27ae60;}
+.btn-danger{background:var(--red);color:#fff;}.btn-danger:active{background:#c0392b;}
+.btn-ghost{background:var(--border);color:var(--text);}.btn-ghost:active{background:#2a2a30;}
+.btn-sm{padding:7px 12px;font-size:12px;min-height:36px;}
+.btn-full{width:100%;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.badge-green{background:rgba(46,204,113,.15);color:var(--green);}
+.badge-red{background:rgba(231,76,60,.15);color:var(--red);}
+.badge-orange{background:rgba(232,184,75,.15);color:var(--accent);}
+.status-unpaid{background:rgba(231,76,60,.15);color:var(--red);}
+.status-partial{background:rgba(232,184,75,.15);color:var(--accent);}
+.status-paid{background:rgba(46,204,113,.15);color:var(--green);}
+
+/* ── PAY ── */
+.pay-btn{padding:10px 6px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .2s;text-align:center;min-height:44px;}
+.pay-btn.active{background:rgba(232,184,75,.15);color:var(--accent);border-color:var(--accent);}
+.pay-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;}
+.pay-mobilepay{background:rgba(107,99,255,.15);color:var(--purple);}
+.pay-kontant{background:rgba(46,204,113,.12);color:var(--green);}
+.pay-bank{background:rgba(52,152,219,.15);color:var(--blue);}
+
+/* ── FIN TOGGLE ── */
+.fin-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.type-btn{padding:11px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;min-height:44px;}
+.type-btn.income.active{background:rgba(46,204,113,.15);color:var(--green);border-color:var(--green);}
+.type-btn.expense.active{background:rgba(231,76,60,.15);color:var(--red);border-color:var(--red);}
+
+/* ── CUSTOMER / FIN CARDS ── */
+.cust-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.cust-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.cust-name{font-weight:600;font-size:15px;}
+.cust-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.cust-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.fin-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.fin-left{flex:1;min-width:0;}
+.fin-desc{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fin-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.fin-right{text-align:right;flex-shrink:0;}
+.fin-amount{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px;}
+.close-btn{background:var(--border);border:none;color:var(--text);font-size:16px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--border);margin:14px 0;}
+.cars-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.car-chip{background:rgba(232,184,75,.12);color:var(--accent);border:1px solid rgba(232,184,75,.25);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;}
+.remove-car{cursor:pointer;opacity:.6;font-size:14px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state .icon{font-size:44px;margin-bottom:10px;display:block;}
+.account-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.account-row:last-child{border-bottom:none;}
+.debt-amount{font-family:'Bebas Neue',sans-serif;font-size:26px;}
+.debt-amount.owed{color:var(--red);}.debt-amount.clear{color:var(--green);}
+.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.search-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+.search-row input{flex:1;font-size:15px;}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);min-height:72px;display:flex;align-items:center;justify-content:center;transition:border .2s,background .2s;}
+.drop-zone.dragover{border-color:var(--accent);background:rgba(232,184,75,.06);}
+.doc-preview-inner{display:flex;align-items:center;gap:10px;width:100%;}
+.doc-icon-lg{font-size:26px;flex-shrink:0;}
+.doc-info{text-align:left;flex:1;min-width:0;}
+.doc-name{font-size:13px;color:var(--text);font-weight:500;word-break:break-all;}
+.doc-size{font-size:11px;color:var(--muted);}
+.doc-remove{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;}
+.doc-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(52,152,219,.15);color:var(--blue);border-radius:6px;padding:3px 7px;font-size:11px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:500;}
+
+/* ── SPINNER / TOAST ── */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;}
+.spinner{border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:36px;height:36px;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.toast.show{opacity:1;}
+
+/* ── CONFIG SCREEN ── */
+.config-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;}
+.config-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;max-width:460px;width:100%;}
+.config-box h2{margin-bottom:8px;}
+.config-box p{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.6;}
+.config-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;text-align:left;}
+.config-step strong{display:block;margin-bottom:4px;font-size:14px;}
+.config-step span{font-size:12px;color:var(--muted);}
+code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace;}
+
+/* ── DESKTOP ── */
+@media(min-width:700px){
+  .topnav{display:flex;}
+  .bottomnav{display:none;}
+  .page{padding:24px;padding-bottom:24px;}
+  .modal-overlay{align-items:center;}
+  .modal{border-radius:18px;max-width:620px;width:95%;padding:24px;}
+  .modal-handle{display:none;}
+  .modal.wide{max-width:700px;}
+  .stats-row{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+  input,select{font-size:14px;}
+  .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .finance-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:16px;}
+  .toast{bottom:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Config screen – vises kun hvis Firebase ikke er sat op -->
+<div id="config-screen" class="config-screen" style="display:none">
+  <div class="config-box">
+    <h2>⚡ AutoCare</h2>
+    <p>Firebase er ikke konfigureret endnu. Følg disse trin for at komme i gang — det tager ca. 5 minutter.</p>
+    <div class="config-step">
+      <strong>1. Opret Firebase projekt</strong>
+      <span>Gå til <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → "Add project" → følg guiden</span>
+    </div>
+    <div class="config-step">
+      <strong>2. Opret Firestore database</strong>
+      <span>I dit projekt: "Build" → "Firestore Database" → "Create database" → vælg "Start in test mode"</span>
+    </div>
+    <div class="config-step">
+      <strong>3. Hent dine nøgler</strong>
+      <span>Project Settings (⚙️) → "Your apps" → "&lt;/&gt; Web" → registrer app → kopiér <code>firebaseConfig</code></span>
+    </div>
+    <div class="config-step">
+      <strong>4. Indsæt nøglerne i denne fil</strong>
+      <span>Åbn <code>autocare.html</code> i Notepad og erstat værdierne i <code>FIREBASE_CONFIG</code> øverst i filen</span>
+    </div>
+    <div class="config-step">
+      <strong>5. Host filen gratis</strong>
+      <span>Gå til <a href="https://tiiny.host" target="_blank" style="color:var(--accent)">tiiny.host</a> → upload filen → få en URL du kan åbne fra alle enheder</span>
+    </div>
+    <p style="margin-top:16px;font-size:12px;color:var(--muted)">Se README.md for detaljeret vejledning med screenshots</p>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="loading" class="spinner-wrap">
+  <div class="spinner"></div>
+  <div style="color:var(--muted);font-size:14px">Forbinder til database…</div>
+</div>
+
+<!-- App (hidden until loaded) -->
+<div id="app" style="display:none">
+
+  <!-- Top nav -->
+  <nav class="topnav">
+    <div class="logo">⚡ AutoCare</div>
+    <div style="display:flex;gap:4px">
+      <button class="dtab active" onclick="showPage('dashboard',this)">📊 Oversigt</button>
+      <button class="dtab" onclick="showPage('customers',this)">👤 Kunder</button>
+      <button class="dtab" onclick="showPage('finance',this)">💰 Økonomi</button>
+    </div>
+  </nav>
+
+  <!-- Dashboard -->
+  <div id="page-dashboard" class="page active">
+    <h2>Oversigt</h2>
+    <div class="stats-row" id="dash-stats"></div>
+    <div class="dashboard-grid">
+      <div class="card"><h3>🔴 Udestående betalinger</h3><div id="dash-outstanding"></div></div>
+      <div class="card"><h3>💸 Seneste transaktioner</h3><div id="dash-recent"></div></div>
+    </div>
+  </div>
+
+  <!-- Customers -->
+  <div id="page-customers" class="page">
+    <h2>Kunder</h2>
+    <div class="search-row">
+      <input type="search" id="cust-search" placeholder="🔍 Søg navn, tlf, bil…" oninput="renderCustomers()" autocomplete="off">
+      <button class="btn btn-primary btn-sm" onclick="openCustModal(null)" style="white-space:nowrap">＋ Ny</button>
+    </div>
+    <div id="customer-list"></div>
+    <div id="customer-empty" class="empty-state" style="display:none"><span class="icon">🚗</span><div>Ingen kunder endnu</div></div>
+  </div>
+
+  <!-- Finance -->
+  <div id="page-finance" class="page">
+    <h2>Økonomi</h2>
+    <div class="stats-row" id="fin-stats"></div>
+    <div class="finance-grid">
+      <div class="card">
+        <h3>Tilføj post</h3>
+        <div class="fin-toggle">
+          <button class="type-btn income active" id="type-income"  onclick="setFinType('income')">▲ Indtægt</button>
+          <button class="type-btn expense"       id="type-expense" onclick="setFinType('expense')">▼ Udgift</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div><label>Beskrivelse</label><input id="fin-desc" type="text" placeholder="f.eks. Polering af BMW" autocomplete="off"></div>
+          <div class="form-grid">
+            <div><label>Beløb (DKK)</label><input id="fin-amount" type="number" inputmode="decimal" min="0" placeholder="0"></div>
+            <div><label>Dato</label><input id="fin-date" type="date"></div>
+          </div>
+          <div><label>Kategori</label>
+            <select id="fin-cat">
+              <option>Betaling fra kunde</option><option>Drikkepenge</option><option>Andet</option>
+            </select>
+          </div>
+          <div id="pay-method-wrap">
+            <label>Betalingsmetode</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <button type="button" class="pay-btn active" data-val="MobilePay" onclick="selPay(this)">📱 MobilePay</button>
+              <button type="button" class="pay-btn" data-val="Kontant"   onclick="selPay(this)">💵 Kontant</button>
+              <button type="button" class="pay-btn" data-val="Bank"      onclick="selPay(this)">🏦 Bank</button>
+            </div>
+          </div>
+          <div id="doc-wrap" style="display:none">
+            <label>Bilag <span style="text-transform:none;font-size:10px;color:var(--muted)">(valgfrit, maks 5 MB)</span></label>
+            <div class="drop-zone" id="drop-zone"
+              onclick="document.getElementById('fin-doc').click()"
+              ondragover="event.preventDefault();this.classList.add('dragover')"
+              ondragleave="this.classList.remove('dragover')"
+              ondrop="handleDrop(event)">
+              <div id="drop-label">📎 Tryk for at vælge fil</div>
+              <div id="doc-preview" style="display:none"></div>
+            </div>
+            <input type="file" id="fin-doc" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xlsx,.xls" style="display:none" onchange="handleFileSelect(this)">
+          </div>
+          <button class="btn btn-primary btn-full" onclick="addFinance()">Tilføj post</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="filter-row">
+          <h3 style="margin:0">Transaktioner</h3>
+          <select id="month-filter" onchange="renderFinances()" style="margin-left:auto;max-width:140px">
+            <option value="all">Alle måneder</option>
+          </select>
+        </div>
+        <div id="finance-list"></div>
+        <div id="finance-empty" class="empty-state" style="display:none"><span class="icon">💳</span><div>Ingen poster endnu</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottomnav">
+    <div class="bnav-inner">
+      <button class="btab active" id="btab-dashboard" onclick="showPageMobile('dashboard')"><span class="bicon">📊</span>Oversigt</button>
+      <button class="btab" id="btab-customers" onclick="showPageMobile('customers')"><span class="bicon">👤</span>Kunder</button>
+      <button class="btab" id="btab-finance"   onclick="showPageMobile('finance')"><span class="bicon">💰</span>Økonomi</button>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═════════════════════════════ MODALS ═════════════════════════════ -->
+
+<!-- Customer edit -->
+<div class="modal-overlay" id="cust-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="cust-modal-title">Ny kunde</div><button class="close-btn" onclick="closeCustModal()">✕</button></div>
+    <div class="form-grid">
+      <div><label>Fornavn</label><input id="c-fn" type="text" placeholder="Anders" autocomplete="given-name"></div>
+      <div><label>Efternavn</label><input id="c-ln" type="text" placeholder="Hansen" autocomplete="family-name"></div>
+      <div><label>Telefon</label><input id="c-ph" type="tel" placeholder="+45 12 34 56 78" autocomplete="tel"></div>
+      <div><label>Email</label><input id="c-em" type="email" placeholder="anders@email.dk" autocomplete="email"></div>
+      <div class="form-full"><label>Adresse</label><input id="c-ad" type="text" placeholder="Eksempelvej 12, 2100 Kbh" autocomplete="street-address"></div>
+      <div class="form-full"><label>Bemærkninger</label><textarea id="c-no" placeholder="Særlige ønsker…"></textarea></div>
+    </div>
+    <div class="divider"></div>
+    <h3>🚗 Biler</h3>
+    <div id="cars-chips" class="cars-list" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="car-input" type="text" placeholder="BMW 3-serie (KX 12 345)" style="flex:1" onkeydown="if(event.key==='Enter')addCar()">
+      <button class="btn btn-ghost btn-sm" onclick="addCar()">＋</button>
+    </div>
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closeCustModal()">Annuller</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">Gem</button>
+    </div>
+  </div>
+</div>
+
+<!-- Account -->
+<div class="modal-overlay" id="account-modal">
+  <div class="modal wide">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="acc-name">Konto</div><button class="close-btn" onclick="closeAccountModal()">✕</button></div>
+    <div id="acc-balance-bar" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Udestående saldo</div><div class="debt-amount" id="acc-bal-val">0 kr</div></div>
+      <div id="acc-bal-status"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>➕ Tilføj opgave</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div><label>Beskrivelse</label><input id="task-desc" type="text" placeholder="Keramisk coating – Audi A4" autocomplete="off"></div>
+        <div class="form-grid">
+          <div><label>Beløb (DKK)</label><input id="task-amt" type="number" inputmode="decimal" min="0" placeholder="0"></div>
+          <div><label>Dato</label><input id="task-date" type="date"></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="addTask()">Tilføj opgave</button>
+      </div>
+    </div>
+    <h3>📋 Opgaver & betalinger</h3>
+    <div id="acc-tasks"></div>
+    <div style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="acc-edit-btn">✏️ Rediger kunde</button></div>
+  </div>
+</div>
+
+<!-- Register payment -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title">💳 Indbetaling</div><button class="close-btn" onclick="closePayModal()">✕</button></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Opgave: <strong id="pay-task-lbl" style="color:var(--text)"></strong></p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <label>Indbetalingsbeløb (DKK)</label>
+        <input id="pay-amt" type="number" inputmode="decimal" min="0" placeholder="0">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Resterende: <span id="pay-rest" style="color:var(--red);font-weight:600"></span></div>
+      </div>
+      <div><label>Dato</label><input id="pay-date" type="date"></div>
+      <div>
+        <label>Betalingsmetode</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button type="button" class="pay-btn active" data-val="MobilePay" onclick="selPayModal(this)">📱 MobilePay</button>
+          <button type="button" class="pay-btn" data-val="Kontant"   onclick="selPayModal(this)">💵 Kontant</button>
+          <button type="button" class="pay-btn" data-val="Bank"      onclick="selPayModal(this)">🏦 Bank</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closePayModal()">Annuller</button>
+      <button class="btn btn-success" onclick="confirmPayment()">✔ Registrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" style="color:var(--red)">🗑 Slet?</div><button class="close-btn" onclick="closeConfirm()">✕</button></div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Dette kan ikke fortrydes.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-weight:600;font-size:14px;margin-bottom:4px" id="conf-desc"></div>
+      <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)" id="conf-date"></span><span style="font-weight:700;font-size:15px" id="conf-amt"></span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Annuller</button>
+      <button class="btn btn-danger" id="conf-ok">Ja, slet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Doc view -->
+<div class="modal-overlay" id="doc-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="doc-modal-title">Bilag</div><button class="close-btn" onclick="closeDocModal()">✕</button></div>
+    <div id="doc-modal-body"></div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closeDocModal()">Luk</button>
+      <a id="doc-dl-btn" class="btn btn-primary">⬇ Download</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════ FIREBASE + APP SCRIPT ═════════════════════════════ -->
+<script type="module">
+import { initializeApp }                              from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+/* ── Init ── */
+const isConfigured = FIREBASE_CONFIG.apiKey !== 'DIN_API_KEY';
+if (!isConfigured) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('config-screen').style.display = 'flex';
+  throw new Error('Firebase not configured');
+}
+
+const app = initializeApp(FIREBASE_CONFIG);
+const db  = getFirestore(app);
+
+/* ── Collections ── */
+const custsCol    = collection(db, 'customers');
+const financesCol = collection(db, 'finances');
+const tasksCol    = collection(db, 'tasks');
+const paymentsCol = collection(db, 'payments');
+
+/* ── Local state (kept in sync via onSnapshot) ── */
+let customers = [], finances = [], tasks = [], payments = [];
+let loaded = { customers:false, finances:false, tasks:false, payments:false };
+
+function checkReady() {
+  if (Object.values(loaded).every(Boolean)) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderAll();
+  }
+}
+
+onSnapshot(query(custsCol,    orderBy('createdAt')),       snap => { customers = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.customers=true;  checkReady(); renderAll(); });
+onSnapshot(query(financesCol, orderBy('date','desc')),      snap => { finances  = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.finances=true;   checkReady(); renderAll(); });
+onSnapshot(query(tasksCol,    orderBy('date','desc')),      snap => { tasks     = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.tasks=true;      checkReady(); renderAll(); });
+onSnapshot(query(paymentsCol, orderBy('date')),             snap => { payments  = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.payments=true;   checkReady(); renderAll(); });
+
+function renderAll() {
+  const p = document.getElementById('page-dashboard');
+  if (p?.classList.contains('active')) renderDashboard();
+  const c = document.getElementById('page-customers');
+  if (c?.classList.contains('active')) renderCustomers();
+  const f = document.getElementById('page-finance');
+  if (f?.classList.contains('active')) renderFinances();
+  if (activeAccountCid) renderAccountModal();
+}
+
+/* ── Helpers ── */
+const fmt     = n => (Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:0})+' kr';
+const today   = () => new Date().toISOString().slice(0,10);
+const docIcon = t => { if(!t)return'📄'; if(t.includes('pdf'))return'📕'; if(t.includes('image'))return'🖼️'; if(t.includes('word')||t.includes('document'))return'📝'; if(t.includes('sheet')||t.includes('excel'))return'📊'; return'📄'; };
+const payBadgeHtml = m => { if(!m)return''; const cls=m==='MobilePay'?'pay-mobilepay':m==='Kontant'?'pay-kontant':'pay-bank'; const ic=m==='MobilePay'?'📱':m==='Kontant'?'💵':'🏦'; return `<span class="pay-badge ${cls}">${ic} ${m}</span>`; };
+const taskPayments = tid => payments.filter(p=>p.taskId===tid);
+const taskPaid = tid => taskPayments(tid).reduce((s,p)=>s+Number(p.amount),0);
+const taskOwed = t => Math.max(0, Number(t.amount) - taskPaid(t.id));
+const taskStatus = t => { const p=taskPaid(t.id); if(p<=0)return{label:'Ubetalt',cls:'status-unpaid'}; if(p<Number(t.amount))return{label:'Delvis',cls:'status-partial'}; return{label:'Betalt',cls:'status-paid'}; };
+const custBalance = cid => tasks.filter(t=>t.customerId===cid).reduce((s,t)=>s+taskOwed(t),0);
+const formatMonth = ym => { const[y,m]=ym.split('-'); return['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'][parseInt(m)-1]+' '+y; };
+
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+/* ════ NAV ════ */
+window.showPage = (id, btn) => {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='customers') renderCustomers();
+  if(id==='finance')   renderFinances();
+};
+window.showPageMobile = id => {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('btab-'+id).classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='customers') renderCustomers();
+  if(id==='finance')   renderFinances();
+};
+
+/* ════ DASHBOARD ════ */
+function renderDashboard() {
+  const inc    = finances.filter(f=>f.type==='income') .reduce((s,f)=>s+Number(f.amount),0);
+  const exp    = finances.filter(f=>f.type==='expense').reduce((s,f)=>s+Number(f.amount),0);
+  const profit = inc - exp;
+  const totalOwed = tasks.reduce((s,t)=>s+taskOwed(t),0);
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Kunder</div><div class="stat-value blue">${customers.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Indtægt</div><div class="stat-value green">${fmt(inc)}</div></div>
+    <div class="stat-card"><div class="stat-label">Udgift</div><div class="stat-value red">${fmt(exp)}</div></div>
+    <div class="stat-card"><div class="stat-label">Resultat</div><div class="stat-value ${profit>=0?'green':'red'}">${fmt(profit)}</div></div>
+    <div class="stat-card"><div class="stat-label">Udestående</div><div class="stat-value orange">${fmt(totalOwed)}</div></div>
+  `;
+  const owing = customers.map(c=>({c,bal:custBalance(c.id)})).filter(x=>x.bal>0).sort((a,b)=>b.bal-a.bal);
+  document.getElementById('dash-outstanding').innerHTML = owing.length
+    ? owing.map(({c,bal})=>`<div class="account-row" style="cursor:pointer" onclick="openAccountModal('${c.id}')"><div><div style="font-weight:500;font-size:14px">${c.firstname} ${c.lastname}</div><div style="font-size:12px;color:var(--muted)">${c.phone||'—'}</div></div><div style="font-weight:700;color:var(--red)">${fmt(bal)}</div></div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px;padding:10px 0">Ingen udestående 🎉</div>';
+  const rf = [...finances].slice(0,6);
+  document.getElementById('dash-recent').innerHTML = rf.length
+    ? rf.map(f=>`<div class="account-row"><div><div style="font-weight:500;font-size:14px">${f.description}</div><div style="font-size:12px;color:var(--muted)">${f.date}</div></div><div style="font-weight:600;color:${f.type==='income'?'var(--green)':'var(--red)'}">${f.type==='income'?'+':'−'}${fmt(f.amount)}</div></div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px">Ingen poster endnu</div>';
+}
+
+/* ════ CUSTOMERS ════ */
+window.renderCustomers = () => {
+  const q = (document.getElementById('cust-search').value||'').toLowerCase();
+  const filtered = customers.filter(c=>
+    (c.firstname+' '+c.lastname).toLowerCase().includes(q)||
+    (c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||
+    (c.cars||[]).some(car=>car.toLowerCase().includes(q))
+  );
+  const list=document.getElementById('customer-list');
+  document.getElementById('customer-empty').style.display=filtered.length?'none':'block';
+  list.innerHTML=filtered.map(c=>{
+    const bal=custBalance(c.id);
+    return`<div class="cust-card">
+      <div class="cust-card-top">
+        <div>
+          <div class="cust-name">${c.firstname} ${c.lastname}</div>
+          <div class="cust-meta">${[c.phone,c.email].filter(Boolean).join(' · ')}</div>
+          ${(c.cars||[]).length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">${(c.cars||[]).map(car=>`<span class="badge badge-orange">${car}</span>`).join('')}</div>`:''}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          ${bal>0?`<div style="font-weight:700;color:var(--red);font-size:14px">${fmt(bal)}</div><div style="font-size:10px;color:var(--muted)">udestående</div>`
+                 :`<div style="color:var(--green);font-size:12px;font-weight:600">✓ Ingen gæld</div>`}
+        </div>
+      </div>
+      <div class="cust-actions">
+        <button class="btn btn-primary btn-sm" onclick="openAccountModal('${c.id}')">🧾 Konto</button>
+        <button class="btn btn-ghost btn-sm"   onclick="openCustModal('${c.id}')">✏️ Rediger</button>
+        <button class="btn btn-danger btn-sm"  onclick="confirmDelete('${c.id}','customer','${c.firstname} ${c.lastname}','','')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+/* Customer modal */
+let editCustId=null, tempCars=[];
+window.openCustModal = id => {
+  editCustId=id; tempCars=[];
+  const c = id ? customers.find(x=>x.id===id) : null;
+  document.getElementById('cust-modal-title').textContent = c?'Rediger kunde':'Ny kunde';
+  document.getElementById('c-fn').value = c?.firstname||'';
+  document.getElementById('c-ln').value = c?.lastname||'';
+  document.getElementById('c-ph').value = c?.phone||'';
+  document.getElementById('c-em').value = c?.email||'';
+  document.getElementById('c-ad').value = c?.address||'';
+  document.getElementById('c-no').value = c?.notes||'';
+  tempCars = [...(c?.cars||[])];
+  renderCarChips();
+  document.getElementById('cust-modal').classList.add('open');
+};
+window.closeCustModal = () => document.getElementById('cust-modal').classList.remove('open');
+window.addCar = () => { const v=document.getElementById('car-input').value.trim(); if(!v)return; tempCars.push(v); document.getElementById('car-input').value=''; renderCarChips(); };
+window.removeTempCar = i => { tempCars.splice(i,1); renderCarChips(); };
+function renderCarChips() {
+  document.getElementById('cars-chips').innerHTML=tempCars.map((c,i)=>`<div class="car-chip">${c}<span class="remove-car" onclick="removeTempCar(${i})">✕</span></div>`).join('');
+}
+window.saveCustomer = async () => {
+  const fn=document.getElementById('c-fn').value.trim();
+  if(!fn){alert('Fornavn er påkrævet');return;}
+  const data={firstname:fn,lastname:document.getElementById('c-ln').value.trim(),phone:document.getElementById('c-ph').value.trim(),email:document.getElementById('c-em').value.trim(),address:document.getElementById('c-ad').value.trim(),notes:document.getElementById('c-no').value.trim(),cars:[...tempCars]};
+  if(editCustId) await updateDoc(doc(db,'customers',editCustId),data);
+  else await addDoc(custsCol,{...data,createdAt:serverTimestamp()});
+  toast(editCustId?'Kunde opdateret':'Kunde oprettet');
+  window.closeCustModal();
+};
+
+/* ════ ACCOUNT MODAL ════ */
+let activeAccountCid=null;
+window.openAccountModal = cid => {
+  activeAccountCid=cid;
+  const c=customers.find(x=>x.id===cid);
+  document.getElementById('acc-name').textContent=c.firstname+' '+c.lastname;
+  document.getElementById('task-date').value=today();
+  document.getElementById('acc-edit-btn').onclick=()=>{closeAccountModal();openCustModal(cid);};
+  renderAccountModal();
+  document.getElementById('account-modal').classList.add('open');
+};
+window.closeAccountModal = () => { document.getElementById('account-modal').classList.remove('open'); activeAccountCid=null; };
+
+function renderAccountModal() {
+  const cid=activeAccountCid; if(!cid)return;
+  const bal=custBalance(cid);
+  const balEl=document.getElementById('acc-bal-val');
+  balEl.textContent=fmt(bal); balEl.className='debt-amount '+(bal>0?'owed':'clear');
+  document.getElementById('acc-bal-status').innerHTML=bal>0?`<span class="badge status-unpaid">Udestående</span>`:`<span class="badge status-paid">Afregnet ✓</span>`;
+  const myTasks=tasks.filter(t=>t.customerId===cid);
+  const cont=document.getElementById('acc-tasks');
+  if(!myTasks.length){cont.innerHTML='<div class="empty-state" style="padding:20px"><span class="icon">📋</span><div>Ingen opgaver endnu</div></div>';return;}
+  cont.innerHTML=myTasks.map(t=>{
+    const owed=taskOwed(t); const st=taskStatus(t); const pays=taskPayments(t.id);
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">${t.description}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${t.date}</div></div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px">${fmt(t.amount)}</div><span class="badge ${st.cls}">${st.label}</span></div>
+      </div>
+      ${pays.length?`<div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:8px">
+        ${pays.map(p=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px"><span>${p.date} · ${payBadgeHtml(p.method)}</span><span style="color:var(--green);font-weight:600">+${fmt(p.amount)}</span></div>`).join('')}
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:13px;color:${owed>0?'var(--red)':'var(--green)'};font-weight:600">${owed>0?`Resterer: ${fmt(owed)}`:'Fuldt betalt ✓'}</span>
+        <div style="display:flex;gap:6px">
+          ${owed>0?`<button class="btn btn-success btn-sm" onclick="openPayModal('${t.id}')">💳 Betal</button>`:''}
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${t.id}','task','${t.description}','${t.date}','${fmt(t.amount)}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.addTask = async () => {
+  const desc=document.getElementById('task-desc').value.trim();
+  const amt=parseFloat(document.getElementById('task-amt').value);
+  const date=document.getElementById('task-date').value;
+  if(!desc){alert('Tilføj beskrivelse');return;} if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
+  await addDoc(tasksCol,{customerId:activeAccountCid,description:desc,amount:amt,date,createdAt:serverTimestamp()});
+  document.getElementById('task-desc').value=''; document.getElementById('task-amt').value='';
+  toast('Opgave tilføjet');
+};
+
+/* ════ PAYMENT MODAL ════ */
+let payingTaskId=null;
+window.openPayModal = tid => {
+  payingTaskId=tid;
+  const t=tasks.find(x=>x.id===tid);
+  document.getElementById('pay-task-lbl').textContent=t.description;
+  document.getElementById('pay-rest').textContent=fmt(taskOwed(t));
+  document.getElementById('pay-amt').value='';
+  document.getElementById('pay-date').value=today();
+  document.querySelectorAll('#pay-modal .pay-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('pay-modal').classList.add('open');
+};
+window.closePayModal = () => document.getElementById('pay-modal').classList.remove('open');
+window.selPayModal = btn => { btn.closest('div').querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+window.confirmPayment = async () => {
+  const t=tasks.find(x=>x.id===payingTaskId);
+  const amt=parseFloat(document.getElementById('pay-amt').value);
+  const date=document.getElementById('pay-date').value;
+  if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
+  const method=(document.querySelector('#pay-modal .pay-btn.active')||{}).dataset?.val||'MobilePay';
+  await addDoc(paymentsCol,{taskId:payingTaskId,amount:amt,date,method,createdAt:serverTimestamp()});
+  await addDoc(financesCol,{type:'income',description:`Indbetaling – ${t.description}`,amount:amt,date,category:'Betaling fra kunde',payment:method,customerId:t.customerId,taskId:payingTaskId,docName:'',docType:'',docData:'',createdAt:serverTimestamp()});
+  toast('Betaling registreret'); closePayModal();
+};
+
+/* ════ FINANCE ════ */
+let currentFinType='income', tempDoc=null;
+window.setFinType = type => {
+  currentFinType=type;
+  document.getElementById('type-income') .classList.toggle('active',type==='income');
+  document.getElementById('type-expense').classList.toggle('active',type==='expense');
+  document.getElementById('pay-method-wrap').style.display=type==='income'?'':'none';
+  document.getElementById('doc-wrap').style.display=type==='expense'?'':'none';
+  document.getElementById('fin-cat').innerHTML=type==='income'
+    ?'<option>Betaling fra kunde</option><option>Drikkepenge</option><option>Andet</option>'
+    :'<option>Materialer</option><option>Udstyr</option><option>Transport</option><option>Løn</option><option>Husleje</option><option>Andet</option>';
+};
+window.selPay = btn => { document.querySelectorAll('#pay-method-wrap .pay-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+
+window.addFinance = async () => {
+  const desc=document.getElementById('fin-desc').value.trim();
+  const amt=parseFloat(document.getElementById('fin-amount').value);
+  const date=document.getElementById('fin-date').value;
+  if(!desc){alert('Tilføj beskrivelse');return;} if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
+  const method=(document.querySelector('#pay-method-wrap .pay-btn.active')||{}).dataset?.val||null;
+  await addDoc(financesCol,{type:currentFinType,description:desc,amount:amt,date,category:document.getElementById('fin-cat').value,payment:currentFinType==='income'?method:null,docName:tempDoc?.name||'',docType:tempDoc?.type||'',docData:tempDoc?.data||'',createdAt:serverTimestamp()});
+  document.getElementById('fin-desc').value=''; document.getElementById('fin-amount').value='';
+  tempDoc=null; renderDocPreview(); toast('Post tilføjet');
+};
+
+window.renderFinances = () => {
+  const mf=document.getElementById('month-filter').value;
+  let fil=mf==='all'?finances:finances.filter(f=>f.date?.startsWith(mf));
+  const inc=fil.filter(f=>f.type==='income') .reduce((s,f)=>s+Number(f.amount),0);
+  const exp=fil.filter(f=>f.type==='expense').reduce((s,f)=>s+Number(f.amount),0);
+  const profit=inc-exp;
+  document.getElementById('fin-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Indtægt</div><div class="stat-value green">${fmt(inc)}</div></div>
+    <div class="stat-card"><div class="stat-label">Udgifter</div><div class="stat-value red">${fmt(exp)}</div></div>
+    <div class="stat-card"><div class="stat-label">Resultat</div><div class="stat-value ${profit>=0?'green':'red'}">${fmt(profit)}</div></div>
+  `;
+  // update month filter options
+  const sel=document.getElementById('month-filter');
+  const cur=sel.value;
+  const months=[...new Set(finances.map(f=>f.date?.slice(0,7)).filter(Boolean))].sort().reverse();
+  sel.innerHTML='<option value="all">Alle måneder</option>'+months.map(m=>`<option value="${m}">${formatMonth(m)}</option>`).join('');
+  if(months.includes(cur))sel.value=cur;
+
+  document.getElementById('finance-empty').style.display=fil.length?'none':'block';
+  document.getElementById('finance-list').innerHTML=fil.map(f=>{
+    const cust=f.customerId?customers.find(x=>x.id===f.customerId):null;
+    return`<div class="fin-card">
+      <div class="fin-left">
+        <div class="fin-desc">${f.description}</div>
+        <div class="fin-meta">
+          <span>${f.date}</span>
+          <span class="badge ${f.type==='income'?'badge-green':'badge-red'}">${f.category}</span>
+          ${payBadgeHtml(f.payment)}
+          ${cust?`<span style="color:var(--muted)">👤 ${cust.firstname} ${cust.lastname}</span>`:''}
+          ${f.docName?`<button class="doc-badge" onclick="viewDoc('${f.id}')">${docIcon(f.docType)} ${f.docName.length>14?f.docName.slice(0,12)+'…':f.docName}</button>`:''}
+        </div>
+      </div>
+      <div class="fin-right">
+        <div class="fin-amount" style="color:${f.type==='income'?'var(--green)':'var(--red)'}">${f.type==='income'?'+':'−'}${fmt(f.amount)}</div>
+        <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="confirmDelete('${f.id}','finance','${f.description}','${f.date}','${(f.type==='income'?'+':'−')+fmt(f.amount)}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+/* ── Doc upload ── */
+window.handleDrop = e => { e.preventDefault(); document.getElementById('drop-zone').classList.remove('dragover'); if(e.dataTransfer.files[0])loadDocFile(e.dataTransfer.files[0]); };
+window.handleFileSelect = input => { if(input.files[0])loadDocFile(input.files[0]); };
+function loadDocFile(file) {
+  if(file.size>5*1024*1024){alert('Maks 5 MB');return;}
+  const r=new FileReader();
+  r.onload=ev=>{tempDoc={name:file.name,size:file.size,type:file.type,data:ev.target.result};renderDocPreview();};
+  r.readAsDataURL(file);
+}
+function renderDocPreview() {
+  const label=document.getElementById('drop-label');
+  const preview=document.getElementById('doc-preview');
+  if(!tempDoc){label.style.display='';preview.style.display='none';preview.innerHTML='';return;}
+  label.style.display='none'; preview.style.display='block';
+  preview.innerHTML=`<div class="doc-preview-inner"><div class="doc-icon-lg">${docIcon(tempDoc.type)}</div><div class="doc-info"><div class="doc-name">${tempDoc.name}</div><div class="doc-size">${(tempDoc.size/1024).toFixed(1)} KB</div></div><button class="doc-remove" onclick="clearDoc(event)">✕</button></div>`;
+}
+window.clearDoc = e => { if(e)e.stopPropagation(); tempDoc=null; document.getElementById('fin-doc').value=''; renderDocPreview(); };
+
+/* ── Doc view ── */
+window.viewDoc = id => {
+  const f=finances.find(x=>x.id===id); if(!f||!f.docName)return;
+  document.getElementById('doc-modal-title').textContent=f.docName;
+  const dl=document.getElementById('doc-dl-btn'); dl.href=f.docData; dl.download=f.docName;
+  let body='';
+  if(f.docType?.includes('image')) body=`<img src="${f.docData}" style="max-width:100%;border-radius:8px;display:block;margin:0 auto" alt="bilag">`;
+  else if(f.docType?.includes('pdf')) body=`<iframe src="${f.docData}" style="width:100%;height:360px;border:none;border-radius:10px" title="pdf"></iframe>`;
+  else body=`<div style="text-align:center;padding:32px;color:var(--muted)"><div style="font-size:48px;margin-bottom:10px">${docIcon(f.docType)}</div><div style="margin-bottom:14px;font-size:14px">${f.docName}</div></div>`;
+  document.getElementById('doc-modal-body').innerHTML=body;
+  document.getElementById('doc-modal').classList.add('open');
+};
+window.closeDocModal = () => document.getElementById('doc-modal').classList.remove('open');
+
+/* ════ CONFIRM DELETE ════ */
+window.confirmDelete = (id, type, desc, date, amt) => {
+  document.getElementById('conf-desc').textContent=desc;
+  document.getElementById('conf-date').textContent=date;
+  document.getElementById('conf-amt').textContent=amt;
+  document.getElementById('conf-amt').style.color=type==='finance'?(amt.startsWith('+'))?'var(--green)':'var(--red)':'var(--accent)';
+  document.getElementById('conf-ok').onclick=async()=>{
+    if(type==='customer'){
+      // delete all tasks and their payments
+      const cTasks=tasks.filter(t=>t.customerId===id);
+      for(const t of cTasks){
+        const tPays=payments.filter(p=>p.taskId===t.id);
+        for(const p of tPays) await deleteDoc(doc(db,'payments',p.id));
+        await deleteDoc(doc(db,'tasks',t.id));
+      }
+      await deleteDoc(doc(db,'customers',id));
+      toast('Kunde slettet');
+    } else if(type==='task'){
+      const tPays=payments.filter(p=>p.taskId===id);
+      for(const p of tPays) await deleteDoc(doc(db,'payments',p.id));
+      await deleteDoc(doc(db,'tasks',id));
+      toast('Opgave slettet');
+    } else if(type==='finance'){
+      await deleteDoc(doc(db,'finances',id));
+      toast('Post slettet');
+    }
+    closeConfirm();
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+};
+window.closeConfirm = () => document.getElementById('confirm-modal').classList.remove('open');
+
+/* ── Init defaults ── */
+document.getElementById('fin-date').value=today();
+document.getElementById('task-date').value=today();
+document.getElementById('pay-date').value=today();
+</script>
+</body>
+</html>

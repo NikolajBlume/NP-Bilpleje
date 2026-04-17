@@ -5,11 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AutoCare Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- ════════════════════════════════════════
-  INDSÆT DINE FIREBASE VÆRDIER HER
-  (se README.md for vejledning)
-════════════════════════════════════════ -->
 <script>
   const FIREBASE_CONFIG = {
     apiKey:            "AIzaSyAHpcIdS-vWSY9GN4lpGCNlOtBX3c2z3Mk",
@@ -20,7 +15,6 @@
     appId:             "1:966440928942:web:e2d5f03c14c756e4384f3f"
   };
 </script>
-
 <style>
 :root{
   --bg:#0a0a0c;--surface:#111114;--card:#16161a;--border:#222228;
@@ -32,152 +26,155 @@
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
 body{padding-bottom:env(safe-area-inset-bottom);}
 
-/* ── TOP NAV ── */
-.topnav{display:none;align-items:center;gap:8px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;position:sticky;top:0;z-index:90;}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);letter-spacing:2px;margin-right:24px;white-space:nowrap;}
-.dtab{padding:7px 16px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;}
+/* NAV */
+.topnav{display:none;align-items:center;gap:6px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;position:sticky;top:0;z-index:90;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:2px;margin-right:16px;white-space:nowrap;}
+.dtab{padding:6px 13px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
 .dtab.active{background:var(--accent);color:#000;}
 .dtab:hover:not(.active){background:var(--border);color:var(--text);}
-
-/* ── BOTTOM NAV ── */
 .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:90;background:var(--surface);border-top:1px solid var(--border);height:calc(var(--bottom-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);}
 .bnav-inner{display:flex;height:var(--bottom-h);}
-.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:color .2s;padding:0;}
-.btab .bicon{font-size:22px;line-height:1;}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;cursor:pointer;transition:color .2s;padding:0;}
+.btab .bicon{font-size:20px;line-height:1;}
 .btab.active{color:var(--accent);}
 
-/* ── PAGES ── */
-.page{display:none;padding:20px 16px;max-width:1150px;margin:0 auto;padding-bottom:calc(var(--bottom-h) + 20px + env(safe-area-inset-bottom));}
+/* PAGES */
+.page{display:none;padding:18px 14px;max-width:1150px;margin:0 auto;padding-bottom:calc(var(--bottom-h) + 20px + env(safe-area-inset-bottom));}
 .page.active{display:block;}
-h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:16px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);margin-bottom:14px;}
 h3{font-size:14px;font-weight:600;margin-bottom:10px;}
 
-/* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
 
-/* ── STATS ── */
-.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
-.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.stat-value{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;line-height:1;}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 13px;}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1;}
 .stat-value.green{color:var(--green);}.stat-value.red{color:var(--red);}
 .stat-value.blue{color:var(--blue);}.stat-value.orange{color:var(--accent);}
 
-/* ── FORMS ── */
+/* FORMS */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .form-full{grid-column:1/-1;}
 label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;}
-input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:16px;transition:border .2s;outline:none;appearance:none;-webkit-appearance:none;}
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:16px;transition:border .2s;outline:none;appearance:none;-webkit-appearance:none;}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
 select option{background:var(--surface);}
-textarea{resize:vertical;min-height:60px;font-size:15px;}
+textarea{resize:vertical;min-height:56px;font-size:15px;}
 
-/* ── BUTTONS ── */
-.btn{padding:11px 18px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:44px;}
+/* BUTTONS */
+.btn{padding:10px 16px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:44px;}
 .btn-primary{background:var(--accent);color:#000;}.btn-primary:active{background:var(--accent2);}
 .btn-success{background:var(--green);color:#000;}.btn-success:active{background:#27ae60;}
 .btn-danger{background:var(--red);color:#fff;}.btn-danger:active{background:#c0392b;}
 .btn-ghost{background:var(--border);color:var(--text);}.btn-ghost:active{background:#2a2a30;}
-.btn-sm{padding:7px 12px;font-size:12px;min-height:36px;}
+.btn-sm{padding:7px 11px;font-size:12px;min-height:36px;}
 .btn-full{width:100%;}
 
-/* ── BADGES ── */
+/* BADGES */
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
 .badge-green{background:rgba(46,204,113,.15);color:var(--green);}
 .badge-red{background:rgba(231,76,60,.15);color:var(--red);}
 .badge-orange{background:rgba(232,184,75,.15);color:var(--accent);}
-.status-unpaid{background:rgba(231,76,60,.15);color:var(--red);}
-.status-partial{background:rgba(232,184,75,.15);color:var(--accent);}
-.status-paid{background:rgba(46,204,113,.15);color:var(--green);}
+.badge-blue{background:rgba(52,152,219,.15);color:var(--blue);}
 
-/* ── PAY ── */
-.pay-btn{padding:10px 6px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .2s;text-align:center;min-height:44px;}
+/* ORDER STATUS BADGES */
+.st-pending{background:rgba(136,136,136,.15);color:var(--muted);}
+.st-inprogress{background:rgba(52,152,219,.15);color:var(--blue);}
+.st-done{background:rgba(232,184,75,.15);color:var(--accent);}
+.st-paid{background:rgba(46,204,113,.15);color:var(--green);}
+
+/* PAY */
+.pay-btn{padding:9px 6px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .2s;text-align:center;min-height:44px;}
 .pay-btn.active{background:rgba(232,184,75,.15);color:var(--accent);border-color:var(--accent);}
 .pay-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;}
 .pay-mobilepay{background:rgba(107,99,255,.15);color:var(--purple);}
 .pay-kontant{background:rgba(46,204,113,.12);color:var(--green);}
 .pay-bank{background:rgba(52,152,219,.15);color:var(--blue);}
 
-/* ── FIN TOGGLE ── */
+/* FIN TOGGLE */
 .fin-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.type-btn{padding:11px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;min-height:44px;}
+.type-btn{padding:10px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;min-height:44px;}
 .type-btn.income.active{background:rgba(46,204,113,.15);color:var(--green);border-color:var(--green);}
 .type-btn.expense.active{background:rgba(231,76,60,.15);color:var(--red);border-color:var(--red);}
 
-/* ── CUSTOMER / FIN CARDS ── */
-.cust-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+/* CUSTOMER CARDS */
+.cust-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:10px;}
 .cust-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .cust-name{font-weight:600;font-size:15px;}
 .cust-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-.cust-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-.fin-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.cust-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+
+/* ORDER CARDS */
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.order-title{font-weight:600;font-size:14px;}
+.order-sub{font-size:12px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.order-amount{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;text-align:right;}
+.order-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+
+/* FIN CARDS */
+.fin-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .fin-left{flex:1;min-width:0;}
 .fin-desc{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fin-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
 .fin-right{text-align:right;flex-shrink:0;}
 .fin-amount{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;}
 
-/* ── MODAL ── */
+/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px;}
-.close-btn{background:var(--border);border:none;color:var(--text);font-size:16px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:18px 14px;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 14px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--accent);letter-spacing:1px;}
+.close-btn{background:var(--border);border:none;color:var(--text);font-size:15px;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
-/* ── MISC ── */
-.divider{height:1px;background:var(--border);margin:14px 0;}
+/* MISC */
+.divider{height:1px;background:var(--border);margin:12px 0;}
 .cars-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
-.car-chip{background:rgba(232,184,75,.12);color:var(--accent);border:1px solid rgba(232,184,75,.25);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;}
-.remove-car{cursor:pointer;opacity:.6;font-size:14px;}
-.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
-.empty-state .icon{font-size:44px;margin-bottom:10px;display:block;}
-.account-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.car-chip{background:rgba(232,184,75,.12);color:var(--accent);border:1px solid rgba(232,184,75,.25);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;}
+.remove-car{cursor:pointer;opacity:.6;font-size:13px;}
+.empty-state{text-align:center;padding:36px 20px;color:var(--muted);}
+.empty-state .icon{font-size:42px;margin-bottom:10px;display:block;}
+.account-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
 .account-row:last-child{border-bottom:none;}
-.debt-amount{font-family:'Bebas Neue',sans-serif;font-size:26px;}
-.debt-amount.owed{color:var(--red);}.debt-amount.clear{color:var(--green);}
-.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
-.search-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.search-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;}
 .search-row input{flex:1;font-size:15px;}
-.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);min-height:72px;display:flex;align-items:center;justify-content:center;transition:border .2s,background .2s;}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);min-height:66px;display:flex;align-items:center;justify-content:center;transition:border .2s,background .2s;}
 .drop-zone.dragover{border-color:var(--accent);background:rgba(232,184,75,.06);}
 .doc-preview-inner{display:flex;align-items:center;gap:10px;width:100%;}
-.doc-icon-lg{font-size:26px;flex-shrink:0;}
+.doc-icon-lg{font-size:24px;flex-shrink:0;}
 .doc-info{text-align:left;flex:1;min-width:0;}
 .doc-name{font-size:13px;color:var(--text);font-weight:500;word-break:break-all;}
 .doc-size{font-size:11px;color:var(--muted);}
-.doc-remove{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;}
+.doc-remove{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;}
 .doc-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(52,152,219,.15);color:var(--blue);border-radius:6px;padding:3px 7px;font-size:11px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:500;}
-
-/* ── SPINNER / TOAST ── */
 .spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;}
-.spinner{border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:36px;height:36px;animation:spin .7s linear infinite;}
+.spinner{border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:34px;height:34px;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.toast{position:fixed;bottom:calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.toast{position:fixed;bottom:calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 .toast.show{opacity:1;}
 
-/* ── CONFIG SCREEN ── */
-.config-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;}
-.config-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;max-width:460px;width:100%;}
-.config-box h2{margin-bottom:8px;}
-.config-box p{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.6;}
-.config-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;text-align:left;}
-.config-step strong{display:block;margin-bottom:4px;font-size:14px;}
-.config-step span{font-size:12px;color:var(--muted);}
-code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace;}
+/* STATUS FILTER PILLS */
+.pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.pill{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;min-height:34px;}
+.pill.active{background:var(--accent);color:#000;border-color:var(--accent);}
 
-/* ── DESKTOP ── */
+/* DESKTOP */
 @media(min-width:700px){
   .topnav{display:flex;}
   .bottomnav{display:none;}
-  .page{padding:24px;padding-bottom:24px;}
+  .page{padding:22px;padding-bottom:22px;}
   .modal-overlay{align-items:center;}
-  .modal{border-radius:18px;max-width:620px;width:95%;padding:24px;}
+  .modal{border-radius:18px;max-width:640px;width:95%;padding:24px;}
   .modal-handle{display:none;}
-  .modal.wide{max-width:700px;}
-  .stats-row{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+  .modal.wide{max-width:720px;}
+  .stats-row{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
   input,select{font-size:14px;}
   .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   .finance-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:16px;}
@@ -187,42 +184,11 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
 </head>
 <body>
 
-<!-- Config screen – vises kun hvis Firebase ikke er sat op -->
-<div id="config-screen" class="config-screen" style="display:none">
-  <div class="config-box">
-    <h2>⚡ AutoCare</h2>
-    <p>Firebase er ikke konfigureret endnu. Følg disse trin for at komme i gang — det tager ca. 5 minutter.</p>
-    <div class="config-step">
-      <strong>1. Opret Firebase projekt</strong>
-      <span>Gå til <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → "Add project" → følg guiden</span>
-    </div>
-    <div class="config-step">
-      <strong>2. Opret Firestore database</strong>
-      <span>I dit projekt: "Build" → "Firestore Database" → "Create database" → vælg "Start in test mode"</span>
-    </div>
-    <div class="config-step">
-      <strong>3. Hent dine nøgler</strong>
-      <span>Project Settings (⚙️) → "Your apps" → "&lt;/&gt; Web" → registrer app → kopiér <code>firebaseConfig</code></span>
-    </div>
-    <div class="config-step">
-      <strong>4. Indsæt nøglerne i denne fil</strong>
-      <span>Åbn <code>autocare.html</code> i Notepad og erstat værdierne i <code>FIREBASE_CONFIG</code> øverst i filen</span>
-    </div>
-    <div class="config-step">
-      <strong>5. Host filen gratis</strong>
-      <span>Gå til <a href="https://tiiny.host" target="_blank" style="color:var(--accent)">tiiny.host</a> → upload filen → få en URL du kan åbne fra alle enheder</span>
-    </div>
-    <p style="margin-top:16px;font-size:12px;color:var(--muted)">Se README.md for detaljeret vejledning med screenshots</p>
-  </div>
-</div>
-
-<!-- Loading -->
 <div id="loading" class="spinner-wrap">
   <div class="spinner"></div>
   <div style="color:var(--muted);font-size:14px">Forbinder til database…</div>
 </div>
 
-<!-- App (hidden until loaded) -->
 <div id="app" style="display:none">
 
   <!-- Top nav -->
@@ -231,21 +197,22 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
     <div style="display:flex;gap:4px">
       <button class="dtab active" onclick="showPage('dashboard',this)">📊 Oversigt</button>
       <button class="dtab" onclick="showPage('customers',this)">👤 Kunder</button>
+      <button class="dtab" onclick="showPage('orders',this)">📋 Ordrer</button>
       <button class="dtab" onclick="showPage('finance',this)">💰 Økonomi</button>
     </div>
   </nav>
 
-  <!-- Dashboard -->
+  <!-- DASHBOARD -->
   <div id="page-dashboard" class="page active">
     <h2>Oversigt</h2>
     <div class="stats-row" id="dash-stats"></div>
     <div class="dashboard-grid">
-      <div class="card"><h3>🔴 Udestående betalinger</h3><div id="dash-outstanding"></div></div>
+      <div class="card"><h3>📋 Åbne ordrer</h3><div id="dash-open-orders"></div></div>
       <div class="card"><h3>💸 Seneste transaktioner</h3><div id="dash-recent"></div></div>
     </div>
   </div>
 
-  <!-- Customers -->
+  <!-- CUSTOMERS -->
   <div id="page-customers" class="page">
     <h2>Kunder</h2>
     <div class="search-row">
@@ -256,7 +223,25 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
     <div id="customer-empty" class="empty-state" style="display:none"><span class="icon">🚗</span><div>Ingen kunder endnu</div></div>
   </div>
 
-  <!-- Finance -->
+  <!-- ORDERS -->
+  <div id="page-orders" class="page">
+    <h2>Ordrer</h2>
+    <div class="stats-row" id="order-stats"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="pill-row" id="status-pills" style="margin-bottom:0">
+        <button class="pill active" data-status="all"    onclick="setOrderFilter('all',this)">Alle</button>
+        <button class="pill" data-status="Afventer"      onclick="setOrderFilter('Afventer',this)">⏳ Afventer</button>
+        <button class="pill" data-status="I gang"        onclick="setOrderFilter('I gang',this)">🔧 I gang</button>
+        <button class="pill" data-status="Færdig"        onclick="setOrderFilter('Færdig',this)">✅ Færdig</button>
+        <button class="pill" data-status="Betalt"        onclick="setOrderFilter('Betalt',this)">💚 Betalt</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openOrderModal(null)" style="white-space:nowrap;margin-left:8px">＋ Ny ordre</button>
+    </div>
+    <div id="order-list"></div>
+    <div id="order-empty" class="empty-state" style="display:none"><span class="icon">📋</span><div>Ingen ordrer endnu</div></div>
+  </div>
+
+  <!-- FINANCE -->
   <div id="page-finance" class="page">
     <h2>Økonomi</h2>
     <div class="stats-row" id="fin-stats"></div>
@@ -270,7 +255,7 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
         <div style="display:flex;flex-direction:column;gap:10px">
           <div><label>Beskrivelse</label><input id="fin-desc" type="text" placeholder="f.eks. Polering af BMW" autocomplete="off"></div>
           <div class="form-grid">
-            <div><label>Beløb (DKK)</label><input id="fin-amount" type="number" inputmode="decimal" min="0" placeholder="0"></div>
+            <div><label>Beløb (DKK)</label><input id="fin-amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0"></div>
             <div><label>Dato</label><input id="fin-date" type="date"></div>
           </div>
           <div><label>Kategori</label>
@@ -318,17 +303,16 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
   <div class="bottomnav">
     <div class="bnav-inner">
       <button class="btab active" id="btab-dashboard" onclick="showPageMobile('dashboard')"><span class="bicon">📊</span>Oversigt</button>
-      <button class="btab" id="btab-customers" onclick="showPageMobile('customers')"><span class="bicon">👤</span>Kunder</button>
-      <button class="btab" id="btab-finance"   onclick="showPageMobile('finance')"><span class="bicon">💰</span>Økonomi</button>
+      <button class="btab" id="btab-customers"        onclick="showPageMobile('customers')"><span class="bicon">👤</span>Kunder</button>
+      <button class="btab" id="btab-orders"           onclick="showPageMobile('orders')"><span class="bicon">📋</span>Ordrer</button>
+      <button class="btab" id="btab-finance"          onclick="showPageMobile('finance')"><span class="bicon">💰</span>Økonomi</button>
     </div>
   </div>
-
 </div><!-- end #app -->
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ═════════════════════════════ MODALS ═════════════════════════════ -->
+<!-- ═══════════════════ MODALS ═══════════════════ -->
 
 <!-- Customer edit -->
 <div class="modal-overlay" id="cust-modal">
@@ -340,7 +324,7 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
       <div><label>Efternavn</label><input id="c-ln" type="text" placeholder="Hansen" autocomplete="family-name"></div>
       <div><label>Telefon</label><input id="c-ph" type="tel" placeholder="+45 12 34 56 78" autocomplete="tel"></div>
       <div><label>Email</label><input id="c-em" type="email" placeholder="anders@email.dk" autocomplete="email"></div>
-      <div class="form-full"><label>Adresse</label><input id="c-ad" type="text" placeholder="Eksempelvej 12, 2100 Kbh" autocomplete="street-address"></div>
+      <div class="form-full"><label>Adresse</label><input id="c-ad" type="text" placeholder="Eksempelvej 12, 2100 Kbh"></div>
       <div class="form-full"><label>Bemærkninger</label><textarea id="c-no" placeholder="Særlige ønsker…"></textarea></div>
     </div>
     <div class="divider"></div>
@@ -350,64 +334,72 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
       <input id="car-input" type="text" placeholder="BMW 3-serie (KX 12 345)" style="flex:1" onkeydown="if(event.key==='Enter')addCar()">
       <button class="btn btn-ghost btn-sm" onclick="addCar()">＋</button>
     </div>
-    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <button class="btn btn-ghost" onclick="closeCustModal()">Annuller</button>
       <button class="btn btn-primary" onclick="saveCustomer()">Gem</button>
     </div>
   </div>
 </div>
 
-<!-- Account -->
-<div class="modal-overlay" id="account-modal">
+<!-- Order create/edit -->
+<div class="modal-overlay" id="order-modal">
   <div class="modal wide">
     <div class="modal-handle"></div>
-    <div class="modal-header"><div class="modal-title" id="acc-name">Konto</div><button class="close-btn" onclick="closeAccountModal()">✕</button></div>
-    <div id="acc-balance-bar" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
-      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Udestående saldo</div><div class="debt-amount" id="acc-bal-val">0 kr</div></div>
-      <div id="acc-bal-status"></div>
-    </div>
-    <div class="card" style="margin-bottom:14px">
-      <h3>➕ Tilføj opgave</h3>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div><label>Beskrivelse</label><input id="task-desc" type="text" placeholder="Keramisk coating – Audi A4" autocomplete="off"></div>
-        <div class="form-grid">
-          <div><label>Beløb (DKK)</label><input id="task-amt" type="number" inputmode="decimal" min="0" placeholder="0"></div>
-          <div><label>Dato</label><input id="task-date" type="date"></div>
-        </div>
-        <button class="btn btn-primary btn-full" onclick="addTask()">Tilføj opgave</button>
+    <div class="modal-header"><div class="modal-title" id="order-modal-title">Ny ordre</div><button class="close-btn" onclick="closeOrderModal()">✕</button></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div><label>Kunde</label>
+        <select id="o-customer">
+          <option value="">Vælg kunde…</option>
+        </select>
       </div>
+      <div><label>Bilmodel</label><input id="o-car" type="text" placeholder="f.eks. BMW 3-serie, KX 12 345" autocomplete="off"></div>
+      <div class="form-full"><label>Beskrivelse af arbejde</label><textarea id="o-desc" placeholder="f.eks. Keramisk coating + polering"></textarea></div>
+      <div class="form-grid">
+        <div><label>Beløb (DKK)</label><input id="o-amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0"></div>
+        <div><label>Dato</label><input id="o-date" type="date"></div>
+      </div>
+      <div><label>Status</label>
+        <select id="o-status">
+          <option value="Afventer">⏳ Afventer</option>
+          <option value="I gang">🔧 I gang</option>
+          <option value="Færdig">✅ Færdig</option>
+          <option value="Betalt">💚 Betalt</option>
+        </select>
+      </div>
+      <div><label>Bemærkninger</label><textarea id="o-notes" placeholder="Interne noter…"></textarea></div>
     </div>
-    <h3>📋 Opgaver & betalinger</h3>
-    <div id="acc-tasks"></div>
-    <div style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="acc-edit-btn">✏️ Rediger kunde</button></div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closeOrderModal()">Annuller</button>
+      <button class="btn btn-primary" onclick="saveOrder()">Gem ordre</button>
+    </div>
   </div>
 </div>
 
-<!-- Register payment -->
-<div class="modal-overlay" id="pay-modal">
+<!-- Register payment on order -->
+<div class="modal-overlay" id="order-pay-modal">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-header"><div class="modal-title">💳 Indbetaling</div><button class="close-btn" onclick="closePayModal()">✕</button></div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Opgave: <strong id="pay-task-lbl" style="color:var(--text)"></strong></p>
+    <div class="modal-header"><div class="modal-title">💳 Registrer betaling</div><button class="close-btn" onclick="closeOrderPayModal()">✕</button></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Ordre: <strong id="opay-lbl" style="color:var(--text)"></strong></p>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div>
-        <label>Indbetalingsbeløb (DKK)</label>
-        <input id="pay-amt" type="number" inputmode="decimal" min="0" placeholder="0">
-        <div style="font-size:11px;color:var(--muted);margin-top:4px">Resterende: <span id="pay-rest" style="color:var(--red);font-weight:600"></span></div>
+        <label>Beløb (DKK)</label>
+        <input id="opay-amt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Ordrebeløb: <span id="opay-total" style="color:var(--accent);font-weight:600"></span></div>
       </div>
-      <div><label>Dato</label><input id="pay-date" type="date"></div>
+      <div><label>Dato</label><input id="opay-date" type="date"></div>
       <div>
         <label>Betalingsmetode</label>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <button type="button" class="pay-btn active" data-val="MobilePay" onclick="selPayModal(this)">📱 MobilePay</button>
-          <button type="button" class="pay-btn" data-val="Kontant"   onclick="selPayModal(this)">💵 Kontant</button>
-          <button type="button" class="pay-btn" data-val="Bank"      onclick="selPayModal(this)">🏦 Bank</button>
+          <button type="button" class="pay-btn active" data-val="MobilePay" onclick="selOpay(this)">📱 MobilePay</button>
+          <button type="button" class="pay-btn" data-val="Kontant"   onclick="selOpay(this)">💵 Kontant</button>
+          <button type="button" class="pay-btn" data-val="Bank"      onclick="selOpay(this)">🏦 Bank</button>
         </div>
       </div>
     </div>
-    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="btn btn-ghost" onclick="closePayModal()">Annuller</button>
-      <button class="btn btn-success" onclick="confirmPayment()">✔ Registrer</button>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closeOrderPayModal()">Annuller</button>
+      <button class="btn btn-success" onclick="confirmOrderPayment()">✔ Registrer</button>
     </div>
   </div>
 </div>
@@ -418,9 +410,9 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
     <div class="modal-handle"></div>
     <div class="modal-header"><div class="modal-title" style="color:var(--red)">🗑 Slet?</div><button class="close-btn" onclick="closeConfirm()">✕</button></div>
     <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Dette kan ikke fortrydes.</p>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:14px">
       <div style="font-weight:600;font-size:14px;margin-bottom:4px" id="conf-desc"></div>
-      <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)" id="conf-date"></span><span style="font-weight:700;font-size:15px" id="conf-amt"></span></div>
+      <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)" id="conf-date"></span><span style="font-weight:700;font-size:14px" id="conf-amt"></span></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <button class="btn btn-ghost" onclick="closeConfirm()">Annuller</button>
@@ -442,143 +434,133 @@ code{background:rgba(232,184,75,.12);color:var(--accent);padding:2px 6px;border-
   </div>
 </div>
 
-<!-- ═════════════════════════════ FIREBASE + APP SCRIPT ═════════════════════════════ -->
+<!-- ═══════════════════ FIREBASE + SCRIPT ═══════════════════ -->
 <script type="module">
-import { initializeApp }                              from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-/* ── Init ── */
-const isConfigured = FIREBASE_CONFIG.apiKey !== 'DIN_API_KEY';
-if (!isConfigured) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('config-screen').style.display = 'flex';
-  throw new Error('Firebase not configured');
-}
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db  = getFirestore(app);
 
-/* ── Collections ── */
-const custsCol    = collection(db, 'customers');
-const financesCol = collection(db, 'finances');
-const tasksCol    = collection(db, 'tasks');
-const paymentsCol = collection(db, 'payments');
+const custsCol   = collection(db,'customers');
+const ordersCol  = collection(db,'orders');
+const financesCol= collection(db,'finances');
 
-/* ── Local state (kept in sync via onSnapshot) ── */
-let customers = [], finances = [], tasks = [], payments = [];
-let loaded = { customers:false, finances:false, tasks:false, payments:false };
+let customers=[], orders=[], finances=[];
+let loaded={c:false,o:false,f:false};
 
-function checkReady() {
-  if (Object.values(loaded).every(Boolean)) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+function checkReady(){
+  if(loaded.c&&loaded.o&&loaded.f){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
     renderAll();
   }
 }
+onSnapshot(query(custsCol,  orderBy('createdAt')),      s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));loaded.c=true;checkReady();renderAll();});
+onSnapshot(query(ordersCol, orderBy('date','desc')),    s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));loaded.o=true;checkReady();renderAll();});
+onSnapshot(query(financesCol,orderBy('date','desc')),   s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));loaded.f=true;checkReady();renderAll();});
 
-onSnapshot(query(custsCol,    orderBy('createdAt')),       snap => { customers = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.customers=true;  checkReady(); renderAll(); });
-onSnapshot(query(financesCol, orderBy('date','desc')),      snap => { finances  = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.finances=true;   checkReady(); renderAll(); });
-onSnapshot(query(tasksCol,    orderBy('date','desc')),      snap => { tasks     = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.tasks=true;      checkReady(); renderAll(); });
-onSnapshot(query(paymentsCol, orderBy('date')),             snap => { payments  = snap.docs.map(d=>({id:d.id,...d.data()})); loaded.payments=true;   checkReady(); renderAll(); });
+/* ── helpers ── */
+const fmt=n=>(Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:2})+' kr';
+const today=()=>new Date().toISOString().slice(0,10);
+const docIcon=t=>{if(!t)return'📄';if(t.includes('pdf'))return'📕';if(t.includes('image'))return'🖼️';if(t.includes('word')||t.includes('document'))return'📝';if(t.includes('sheet')||t.includes('excel'))return'📊';return'📄';};
+const payBadgeHtml=m=>{if(!m)return'';const cls=m==='MobilePay'?'pay-mobilepay':m==='Kontant'?'pay-kontant':'pay-bank';const ic=m==='MobilePay'?'📱':m==='Kontant'?'💵':'🏦';return`<span class="pay-badge ${cls}">${ic} ${m}</span>`;};
+const formatMonth=ym=>{const[y,m]=ym.split('-');return['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'][parseInt(m)-1]+' '+y;};
+const statusCls=s=>s==='Afventer'?'st-pending':s==='I gang'?'st-inprogress':s==='Færdig'?'st-done':'st-paid';
+const statusIcon=s=>s==='Afventer'?'⏳':s==='I gang'?'🔧':s==='Færdig'?'✅':'💚';
 
-function renderAll() {
-  const p = document.getElementById('page-dashboard');
-  if (p?.classList.contains('active')) renderDashboard();
-  const c = document.getElementById('page-customers');
-  if (c?.classList.contains('active')) renderCustomers();
-  const f = document.getElementById('page-finance');
-  if (f?.classList.contains('active')) renderFinances();
-  if (activeAccountCid) renderAccountModal();
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+
+function renderAll(){
+  const dash=document.getElementById('page-dashboard');
+  if(dash?.classList.contains('active'))renderDashboard();
+  const custs=document.getElementById('page-customers');
+  if(custs?.classList.contains('active'))renderCustomers();
+  const ords=document.getElementById('page-orders');
+  if(ords?.classList.contains('active'))renderOrders();
+  const fin=document.getElementById('page-finance');
+  if(fin?.classList.contains('active'))renderFinances();
 }
 
-/* ── Helpers ── */
-const fmt     = n => (Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:0})+' kr';
-const today   = () => new Date().toISOString().slice(0,10);
-const docIcon = t => { if(!t)return'📄'; if(t.includes('pdf'))return'📕'; if(t.includes('image'))return'🖼️'; if(t.includes('word')||t.includes('document'))return'📝'; if(t.includes('sheet')||t.includes('excel'))return'📊'; return'📄'; };
-const payBadgeHtml = m => { if(!m)return''; const cls=m==='MobilePay'?'pay-mobilepay':m==='Kontant'?'pay-kontant':'pay-bank'; const ic=m==='MobilePay'?'📱':m==='Kontant'?'💵':'🏦'; return `<span class="pay-badge ${cls}">${ic} ${m}</span>`; };
-const taskPayments = tid => payments.filter(p=>p.taskId===tid);
-const taskPaid = tid => taskPayments(tid).reduce((s,p)=>s+Number(p.amount),0);
-const taskOwed = t => Math.max(0, Number(t.amount) - taskPaid(t.id));
-const taskStatus = t => { const p=taskPaid(t.id); if(p<=0)return{label:'Ubetalt',cls:'status-unpaid'}; if(p<Number(t.amount))return{label:'Delvis',cls:'status-partial'}; return{label:'Betalt',cls:'status-paid'}; };
-const custBalance = cid => tasks.filter(t=>t.customerId===cid).reduce((s,t)=>s+taskOwed(t),0);
-const formatMonth = ym => { const[y,m]=ym.split('-'); return['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'][parseInt(m)-1]+' '+y; };
-
-function toast(msg) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
-}
-
-/* ════ NAV ════ */
-window.showPage = (id, btn) => {
+/* ── NAV ── */
+window.showPage=(id,btn)=>{
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(id==='dashboard') renderDashboard();
-  if(id==='customers') renderCustomers();
-  if(id==='finance')   renderFinances();
+  if(btn)btn.classList.add('active');
+  if(id==='dashboard')renderDashboard();
+  if(id==='customers')renderCustomers();
+  if(id==='orders')   renderOrders();
+  if(id==='finance')  renderFinances();
 };
-window.showPageMobile = id => {
+window.showPageMobile=id=>{
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.getElementById('btab-'+id).classList.add('active');
-  if(id==='dashboard') renderDashboard();
-  if(id==='customers') renderCustomers();
-  if(id==='finance')   renderFinances();
+  if(id==='dashboard')renderDashboard();
+  if(id==='customers')renderCustomers();
+  if(id==='orders')   renderOrders();
+  if(id==='finance')  renderFinances();
 };
 
 /* ════ DASHBOARD ════ */
-function renderDashboard() {
-  const inc    = finances.filter(f=>f.type==='income') .reduce((s,f)=>s+Number(f.amount),0);
-  const exp    = finances.filter(f=>f.type==='expense').reduce((s,f)=>s+Number(f.amount),0);
-  const profit = inc - exp;
-  const totalOwed = tasks.reduce((s,t)=>s+taskOwed(t),0);
+function renderDashboard(){
+  const inc=finances.filter(f=>f.type==='income').reduce((s,f)=>s+Number(f.amount),0);
+  const exp=finances.filter(f=>f.type==='expense').reduce((s,f)=>s+Number(f.amount),0);
+  const openOrders=orders.filter(o=>o.status!=='Betalt');
+  const openVal=openOrders.reduce((s,o)=>s+Number(o.amount),0);
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">Kunder</div><div class="stat-value blue">${customers.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Åbne ordrer</div><div class="stat-value orange">${openOrders.length}</div></div>
     <div class="stat-card"><div class="stat-label">Indtægt</div><div class="stat-value green">${fmt(inc)}</div></div>
-    <div class="stat-card"><div class="stat-label">Udgift</div><div class="stat-value red">${fmt(exp)}</div></div>
-    <div class="stat-card"><div class="stat-label">Resultat</div><div class="stat-value ${profit>=0?'green':'red'}">${fmt(profit)}</div></div>
-    <div class="stat-card"><div class="stat-label">Udestående</div><div class="stat-value orange">${fmt(totalOwed)}</div></div>
+    <div class="stat-card"><div class="stat-label">Resultat</div><div class="stat-value ${inc-exp>=0?'green':'red'}">${fmt(inc-exp)}</div></div>
+    <div class="stat-card"><div class="stat-label">Udestående</div><div class="stat-value orange">${fmt(openVal)}</div></div>
   `;
-  const owing = customers.map(c=>({c,bal:custBalance(c.id)})).filter(x=>x.bal>0).sort((a,b)=>b.bal-a.bal);
-  document.getElementById('dash-outstanding').innerHTML = owing.length
-    ? owing.map(({c,bal})=>`<div class="account-row" style="cursor:pointer" onclick="openAccountModal('${c.id}')"><div><div style="font-weight:500;font-size:14px">${c.firstname} ${c.lastname}</div><div style="font-size:12px;color:var(--muted)">${c.phone||'—'}</div></div><div style="font-weight:700;color:var(--red)">${fmt(bal)}</div></div>`).join('')
-    : '<div style="color:var(--muted);font-size:13px;padding:10px 0">Ingen udestående 🎉</div>';
-  const rf = [...finances].slice(0,6);
-  document.getElementById('dash-recent').innerHTML = rf.length
-    ? rf.map(f=>`<div class="account-row"><div><div style="font-weight:500;font-size:14px">${f.description}</div><div style="font-size:12px;color:var(--muted)">${f.date}</div></div><div style="font-weight:600;color:${f.type==='income'?'var(--green)':'var(--red)'}">${f.type==='income'?'+':'−'}${fmt(f.amount)}</div></div>`).join('')
-    : '<div style="color:var(--muted);font-size:13px">Ingen poster endnu</div>';
+  const open=orders.filter(o=>o.status!=='Betalt').slice(0,6);
+  document.getElementById('dash-open-orders').innerHTML=open.length
+    ?open.map(o=>{const c=customers.find(x=>x.id===o.customerId);return`<div class="account-row" style="cursor:pointer" onclick="openOrderModal('${o.id}')">
+        <div><div style="font-weight:500;font-size:13px">${o.description?.slice(0,30)||'—'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${c?c.firstname+' '+c.lastname:'—'} · ${o.carModel||''}</div></div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:700;font-size:13px">${fmt(o.amount)}</div>
+          <span class="badge ${statusCls(o.status)}">${o.status}</span>
+        </div>
+      </div>`;}).join('')
+    :'<div style="color:var(--muted);font-size:13px;padding:10px 0">Ingen åbne ordrer 🎉</div>';
+  const rf=finances.slice(0,5);
+  document.getElementById('dash-recent').innerHTML=rf.length
+    ?rf.map(f=>`<div class="account-row"><div><div style="font-weight:500;font-size:13px">${f.description}</div><div style="font-size:11px;color:var(--muted)">${f.date}</div></div><div style="font-weight:600;color:${f.type==='income'?'var(--green)':'var(--red)'}">${f.type==='income'?'+':'−'}${fmt(f.amount)}</div></div>`).join('')
+    :'<div style="color:var(--muted);font-size:13px">Ingen poster endnu</div>';
 }
 
 /* ════ CUSTOMERS ════ */
-window.renderCustomers = () => {
-  const q = (document.getElementById('cust-search').value||'').toLowerCase();
-  const filtered = customers.filter(c=>
+window.renderCustomers=()=>{
+  const q=(document.getElementById('cust-search').value||'').toLowerCase();
+  const filtered=customers.filter(c=>
     (c.firstname+' '+c.lastname).toLowerCase().includes(q)||
     (c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q)||
     (c.cars||[]).some(car=>car.toLowerCase().includes(q))
   );
-  const list=document.getElementById('customer-list');
   document.getElementById('customer-empty').style.display=filtered.length?'none':'block';
-  list.innerHTML=filtered.map(c=>{
-    const bal=custBalance(c.id);
+  document.getElementById('customer-list').innerHTML=filtered.map(c=>{
+    const cOrders=orders.filter(o=>o.customerId===c.id);
+    const openAmt=cOrders.filter(o=>o.status!=='Betalt').reduce((s,o)=>s+Number(o.amount),0);
     return`<div class="cust-card">
       <div class="cust-card-top">
         <div>
           <div class="cust-name">${c.firstname} ${c.lastname}</div>
           <div class="cust-meta">${[c.phone,c.email].filter(Boolean).join(' · ')}</div>
-          ${(c.cars||[]).length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">${(c.cars||[]).map(car=>`<span class="badge badge-orange">${car}</span>`).join('')}</div>`:''}
+          ${(c.cars||[]).length?`<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${(c.cars||[]).map(car=>`<span class="badge badge-orange">${car}</span>`).join('')}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
-          ${bal>0?`<div style="font-weight:700;color:var(--red);font-size:14px">${fmt(bal)}</div><div style="font-size:10px;color:var(--muted)">udestående</div>`
-                 :`<div style="color:var(--green);font-size:12px;font-weight:600">✓ Ingen gæld</div>`}
+          ${openAmt>0?`<div style="font-weight:700;color:var(--red);font-size:13px">${fmt(openAmt)}</div><div style="font-size:10px;color:var(--muted)">udestående</div>`
+                     :`<div style="color:var(--green);font-size:12px;font-weight:600">✓ Ingen gæld</div>`}
         </div>
       </div>
       <div class="cust-actions">
-        <button class="btn btn-primary btn-sm" onclick="openAccountModal('${c.id}')">🧾 Konto</button>
+        <button class="btn btn-primary btn-sm" onclick="newOrderForCustomer('${c.id}')">＋ Ny ordre</button>
         <button class="btn btn-ghost btn-sm"   onclick="openCustModal('${c.id}')">✏️ Rediger</button>
         <button class="btn btn-danger btn-sm"  onclick="confirmDelete('${c.id}','customer','${c.firstname} ${c.lastname}','','')">🗑</button>
       </div>
@@ -586,121 +568,158 @@ window.renderCustomers = () => {
   }).join('');
 };
 
-/* Customer modal */
-let editCustId=null, tempCars=[];
-window.openCustModal = id => {
-  editCustId=id; tempCars=[];
-  const c = id ? customers.find(x=>x.id===id) : null;
-  document.getElementById('cust-modal-title').textContent = c?'Rediger kunde':'Ny kunde';
-  document.getElementById('c-fn').value = c?.firstname||'';
-  document.getElementById('c-ln').value = c?.lastname||'';
-  document.getElementById('c-ph').value = c?.phone||'';
-  document.getElementById('c-em').value = c?.email||'';
-  document.getElementById('c-ad').value = c?.address||'';
-  document.getElementById('c-no').value = c?.notes||'';
-  tempCars = [...(c?.cars||[])];
+let editCustId=null,tempCars=[];
+window.openCustModal=id=>{
+  editCustId=id;tempCars=[];
+  const c=id?customers.find(x=>x.id===id):null;
+  document.getElementById('cust-modal-title').textContent=c?'Rediger kunde':'Ny kunde';
+  document.getElementById('c-fn').value=c?.firstname||'';
+  document.getElementById('c-ln').value=c?.lastname||'';
+  document.getElementById('c-ph').value=c?.phone||'';
+  document.getElementById('c-em').value=c?.email||'';
+  document.getElementById('c-ad').value=c?.address||'';
+  document.getElementById('c-no').value=c?.notes||'';
+  tempCars=[...(c?.cars||[])];
   renderCarChips();
   document.getElementById('cust-modal').classList.add('open');
 };
-window.closeCustModal = () => document.getElementById('cust-modal').classList.remove('open');
-window.addCar = () => { const v=document.getElementById('car-input').value.trim(); if(!v)return; tempCars.push(v); document.getElementById('car-input').value=''; renderCarChips(); };
-window.removeTempCar = i => { tempCars.splice(i,1); renderCarChips(); };
-function renderCarChips() {
-  document.getElementById('cars-chips').innerHTML=tempCars.map((c,i)=>`<div class="car-chip">${c}<span class="remove-car" onclick="removeTempCar(${i})">✕</span></div>`).join('');
-}
-window.saveCustomer = async () => {
+window.closeCustModal=()=>document.getElementById('cust-modal').classList.remove('open');
+window.addCar=()=>{const v=document.getElementById('car-input').value.trim();if(!v)return;tempCars.push(v);document.getElementById('car-input').value='';renderCarChips();};
+window.removeTempCar=i=>{tempCars.splice(i,1);renderCarChips();};
+function renderCarChips(){document.getElementById('cars-chips').innerHTML=tempCars.map((c,i)=>`<div class="car-chip">${c}<span class="remove-car" onclick="removeTempCar(${i})">✕</span></div>`).join('');}
+window.saveCustomer=async()=>{
   const fn=document.getElementById('c-fn').value.trim();
   if(!fn){alert('Fornavn er påkrævet');return;}
   const data={firstname:fn,lastname:document.getElementById('c-ln').value.trim(),phone:document.getElementById('c-ph').value.trim(),email:document.getElementById('c-em').value.trim(),address:document.getElementById('c-ad').value.trim(),notes:document.getElementById('c-no').value.trim(),cars:[...tempCars]};
-  if(editCustId) await updateDoc(doc(db,'customers',editCustId),data);
+  if(editCustId)await updateDoc(doc(db,'customers',editCustId),data);
   else await addDoc(custsCol,{...data,createdAt:serverTimestamp()});
   toast(editCustId?'Kunde opdateret':'Kunde oprettet');
   window.closeCustModal();
 };
 
-/* ════ ACCOUNT MODAL ════ */
-let activeAccountCid=null;
-window.openAccountModal = cid => {
-  activeAccountCid=cid;
-  const c=customers.find(x=>x.id===cid);
-  document.getElementById('acc-name').textContent=c.firstname+' '+c.lastname;
-  document.getElementById('task-date').value=today();
-  document.getElementById('acc-edit-btn').onclick=()=>{closeAccountModal();openCustModal(cid);};
-  renderAccountModal();
-  document.getElementById('account-modal').classList.add('open');
+/* ════ ORDERS ════ */
+let orderFilter='all';
+window.setOrderFilter=(status,btn)=>{
+  orderFilter=status;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  renderOrders();
 };
-window.closeAccountModal = () => { document.getElementById('account-modal').classList.remove('open'); activeAccountCid=null; };
 
-function renderAccountModal() {
-  const cid=activeAccountCid; if(!cid)return;
-  const bal=custBalance(cid);
-  const balEl=document.getElementById('acc-bal-val');
-  balEl.textContent=fmt(bal); balEl.className='debt-amount '+(bal>0?'owed':'clear');
-  document.getElementById('acc-bal-status').innerHTML=bal>0?`<span class="badge status-unpaid">Udestående</span>`:`<span class="badge status-paid">Afregnet ✓</span>`;
-  const myTasks=tasks.filter(t=>t.customerId===cid);
-  const cont=document.getElementById('acc-tasks');
-  if(!myTasks.length){cont.innerHTML='<div class="empty-state" style="padding:20px"><span class="icon">📋</span><div>Ingen opgaver endnu</div></div>';return;}
-  cont.innerHTML=myTasks.map(t=>{
-    const owed=taskOwed(t); const st=taskStatus(t); const pays=taskPayments(t.id);
-    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
-        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">${t.description}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${t.date}</div></div>
-        <div style="text-align:right;flex-shrink:0"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px">${fmt(t.amount)}</div><span class="badge ${st.cls}">${st.label}</span></div>
-      </div>
-      ${pays.length?`<div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:8px">
-        ${pays.map(p=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px"><span>${p.date} · ${payBadgeHtml(p.method)}</span><span style="color:var(--green);font-weight:600">+${fmt(p.amount)}</span></div>`).join('')}
-      </div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:13px;color:${owed>0?'var(--red)':'var(--green)'};font-weight:600">${owed>0?`Resterer: ${fmt(owed)}`:'Fuldt betalt ✓'}</span>
-        <div style="display:flex;gap:6px">
-          ${owed>0?`<button class="btn btn-success btn-sm" onclick="openPayModal('${t.id}')">💳 Betal</button>`:''}
-          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${t.id}','task','${t.description}','${t.date}','${fmt(t.amount)}')">🗑</button>
+function renderOrders(){
+  const fil=orderFilter==='all'?orders:orders.filter(o=>o.status===orderFilter);
+  // stats
+  const total=orders.length;
+  const open=orders.filter(o=>o.status!=='Betalt').length;
+  const openVal=orders.filter(o=>o.status!=='Betalt').reduce((s,o)=>s+Number(o.amount),0);
+  document.getElementById('order-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total ordrer</div><div class="stat-value blue">${total}</div></div>
+    <div class="stat-card"><div class="stat-label">Åbne</div><div class="stat-value orange">${open}</div></div>
+    <div class="stat-card"><div class="stat-label">Udestående</div><div class="stat-value red">${fmt(openVal)}</div></div>
+  `;
+  document.getElementById('order-empty').style.display=fil.length?'none':'block';
+  document.getElementById('order-list').innerHTML=fil.map(o=>{
+    const c=customers.find(x=>x.id===o.customerId);
+    const custName=c?c.firstname+' '+c.lastname:'Ukendt kunde';
+    return`<div class="order-card">
+      <div class="order-top">
+        <div style="flex:1;min-width:0">
+          <div class="order-title">${o.description||'Ingen beskrivelse'}</div>
+          <div class="order-sub">
+            <span>👤 ${custName}</span>
+            ${o.carModel?`<span>🚗 ${o.carModel}</span>`:''}
+            <span style="color:var(--muted)">${o.date||''}</span>
+          </div>
+          ${o.notes?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-style:italic">${o.notes}</div>`:''}
         </div>
+        <div style="flex-shrink:0;text-align:right">
+          <div class="order-amount">${fmt(o.amount)}</div>
+          <span class="badge ${statusCls(o.status)}">${statusIcon(o.status)} ${o.status}</span>
+        </div>
+      </div>
+      <div class="order-actions">
+        ${o.status!=='Betalt'?`<button class="btn btn-success btn-sm" onclick="openOrderPayModal('${o.id}')">💳 Registrer betaling</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="openOrderModal('${o.id}')">✏️ Rediger</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDelete('${o.id}','order','${(o.description||'').replace(/'/g,'')}','${o.date||''}','${fmt(o.amount)}')">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 
-window.addTask = async () => {
-  const desc=document.getElementById('task-desc').value.trim();
-  const amt=parseFloat(document.getElementById('task-amt').value);
-  const date=document.getElementById('task-date').value;
-  if(!desc){alert('Tilføj beskrivelse');return;} if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
-  await addDoc(tasksCol,{customerId:activeAccountCid,description:desc,amount:amt,date,createdAt:serverTimestamp()});
-  document.getElementById('task-desc').value=''; document.getElementById('task-amt').value='';
-  toast('Opgave tilføjet');
+let editOrderId=null;
+window.openOrderModal=id=>{
+  editOrderId=id||null;
+  const o=id?orders.find(x=>x.id===id):null;
+  document.getElementById('order-modal-title').textContent=o?'Rediger ordre':'Ny ordre';
+  // populate customer dropdown
+  document.getElementById('o-customer').innerHTML='<option value="">Vælg kunde…</option>'+
+    customers.map(c=>`<option value="${c.id}" ${o?.customerId===c.id?'selected':''}>${c.firstname} ${c.lastname}</option>`).join('');
+  document.getElementById('o-car').value=o?.carModel||'';
+  document.getElementById('o-desc').value=o?.description||'';
+  document.getElementById('o-amount').value=o?.amount||'';
+  document.getElementById('o-date').value=o?.date||today();
+  document.getElementById('o-status').value=o?.status||'Afventer';
+  document.getElementById('o-notes').value=o?.notes||'';
+  document.getElementById('order-modal').classList.add('open');
+};
+window.newOrderForCustomer=cid=>{
+  openOrderModal(null);
+  setTimeout(()=>{ document.getElementById('o-customer').value=cid; },50);
+};
+window.closeOrderModal=()=>document.getElementById('order-modal').classList.remove('open');
+window.saveOrder=async()=>{
+  const cid=document.getElementById('o-customer').value;
+  const desc=document.getElementById('o-desc').value.trim();
+  const amt=parseFloat(document.getElementById('o-amount').value);
+  const date=document.getElementById('o-date').value;
+  const status=document.getElementById('o-status').value;
+  if(!cid){alert('Vælg en kunde');return;}
+  if(!desc){alert('Tilføj beskrivelse');return;}
+  if(!amt||amt<=0){alert('Ugyldigt beløb');return;}
+  if(!date){alert('Vælg dato');return;}
+  const data={customerId:cid,carModel:document.getElementById('o-car').value.trim(),description:desc,amount:amt,date,status,notes:document.getElementById('o-notes').value.trim()};
+  if(editOrderId)await updateDoc(doc(db,'orders',editOrderId),data);
+  else await addDoc(ordersCol,{...data,createdAt:serverTimestamp()});
+  toast(editOrderId?'Ordre opdateret':'Ordre oprettet');
+  window.closeOrderModal();
 };
 
-/* ════ PAYMENT MODAL ════ */
-let payingTaskId=null;
-window.openPayModal = tid => {
-  payingTaskId=tid;
-  const t=tasks.find(x=>x.id===tid);
-  document.getElementById('pay-task-lbl').textContent=t.description;
-  document.getElementById('pay-rest').textContent=fmt(taskOwed(t));
-  document.getElementById('pay-amt').value='';
-  document.getElementById('pay-date').value=today();
-  document.querySelectorAll('#pay-modal .pay-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
-  document.getElementById('pay-modal').classList.add('open');
+/* ── Order payment ── */
+let payingOrderId=null;
+window.openOrderPayModal=oid=>{
+  payingOrderId=oid;
+  const o=orders.find(x=>x.id===oid);
+  document.getElementById('opay-lbl').textContent=o.description||'';
+  document.getElementById('opay-total').textContent=fmt(o.amount);
+  document.getElementById('opay-amt').value=o.amount;
+  document.getElementById('opay-date').value=today();
+  document.querySelectorAll('#order-pay-modal .pay-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('order-pay-modal').classList.add('open');
 };
-window.closePayModal = () => document.getElementById('pay-modal').classList.remove('open');
-window.selPayModal = btn => { btn.closest('div').querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
-window.confirmPayment = async () => {
-  const t=tasks.find(x=>x.id===payingTaskId);
-  const amt=parseFloat(document.getElementById('pay-amt').value);
-  const date=document.getElementById('pay-date').value;
-  if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
-  const method=(document.querySelector('#pay-modal .pay-btn.active')||{}).dataset?.val||'MobilePay';
-  await addDoc(paymentsCol,{taskId:payingTaskId,amount:amt,date,method,createdAt:serverTimestamp()});
-  await addDoc(financesCol,{type:'income',description:`Indbetaling – ${t.description}`,amount:amt,date,category:'Betaling fra kunde',payment:method,customerId:t.customerId,taskId:payingTaskId,docName:'',docType:'',docData:'',createdAt:serverTimestamp()});
-  toast('Betaling registreret'); closePayModal();
+window.closeOrderPayModal=()=>document.getElementById('order-pay-modal').classList.remove('open');
+window.selOpay=btn=>{btn.closest('div').querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+window.confirmOrderPayment=async()=>{
+  const o=orders.find(x=>x.id===payingOrderId);
+  const amt=parseFloat(document.getElementById('opay-amt').value);
+  const date=document.getElementById('opay-date').value;
+  if(!amt||amt<=0){alert('Ugyldigt beløb');return;}
+  if(!date){alert('Vælg dato');return;}
+  const method=(document.querySelector('#order-pay-modal .pay-btn.active')||{}).dataset?.val||'MobilePay';
+  const c=customers.find(x=>x.id===o.customerId);
+  const custName=c?c.firstname+' '+c.lastname:'';
+  // mark order as paid
+  await updateDoc(doc(db,'orders',payingOrderId),{status:'Betalt',paidDate:date,paidMethod:method});
+  // log income in finances
+  await addDoc(financesCol,{type:'income',description:`Betaling – ${o.description}`,amount:amt,date,category:'Betaling fra kunde',payment:method,customerId:o.customerId,orderId:payingOrderId,docName:'',docType:'',docData:'',createdAt:serverTimestamp()});
+  toast('Betaling registreret – ordre markeret som Betalt');
+  window.closeOrderPayModal();
 };
 
 /* ════ FINANCE ════ */
-let currentFinType='income', tempDoc=null;
-window.setFinType = type => {
+let currentFinType='income',tempDoc=null;
+window.setFinType=type=>{
   currentFinType=type;
-  document.getElementById('type-income') .classList.toggle('active',type==='income');
+  document.getElementById('type-income').classList.toggle('active',type==='income');
   document.getElementById('type-expense').classList.toggle('active',type==='expense');
   document.getElementById('pay-method-wrap').style.display=type==='income'?'':'none';
   document.getElementById('doc-wrap').style.display=type==='expense'?'':'none';
@@ -708,23 +727,23 @@ window.setFinType = type => {
     ?'<option>Betaling fra kunde</option><option>Drikkepenge</option><option>Andet</option>'
     :'<option>Materialer</option><option>Udstyr</option><option>Transport</option><option>Løn</option><option>Husleje</option><option>Andet</option>';
 };
-window.selPay = btn => { document.querySelectorAll('#pay-method-wrap .pay-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+window.selPay=btn=>{document.querySelectorAll('#pay-method-wrap .pay-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
 
-window.addFinance = async () => {
+window.addFinance=async()=>{
   const desc=document.getElementById('fin-desc').value.trim();
   const amt=parseFloat(document.getElementById('fin-amount').value);
   const date=document.getElementById('fin-date').value;
-  if(!desc){alert('Tilføj beskrivelse');return;} if(!amt||amt<=0){alert('Ugyldigt beløb');return;} if(!date){alert('Vælg dato');return;}
+  if(!desc){alert('Tilføj beskrivelse');return;}if(!amt||amt<=0){alert('Ugyldigt beløb');return;}if(!date){alert('Vælg dato');return;}
   const method=(document.querySelector('#pay-method-wrap .pay-btn.active')||{}).dataset?.val||null;
   await addDoc(financesCol,{type:currentFinType,description:desc,amount:amt,date,category:document.getElementById('fin-cat').value,payment:currentFinType==='income'?method:null,docName:tempDoc?.name||'',docType:tempDoc?.type||'',docData:tempDoc?.data||'',createdAt:serverTimestamp()});
-  document.getElementById('fin-desc').value=''; document.getElementById('fin-amount').value='';
-  tempDoc=null; renderDocPreview(); toast('Post tilføjet');
+  document.getElementById('fin-desc').value='';document.getElementById('fin-amount').value='';
+  tempDoc=null;renderDocPreview();toast('Post tilføjet');
 };
 
-window.renderFinances = () => {
+window.renderFinances=()=>{
   const mf=document.getElementById('month-filter').value;
   let fil=mf==='all'?finances:finances.filter(f=>f.date?.startsWith(mf));
-  const inc=fil.filter(f=>f.type==='income') .reduce((s,f)=>s+Number(f.amount),0);
+  const inc=fil.filter(f=>f.type==='income').reduce((s,f)=>s+Number(f.amount),0);
   const exp=fil.filter(f=>f.type==='expense').reduce((s,f)=>s+Number(f.amount),0);
   const profit=inc-exp;
   document.getElementById('fin-stats').innerHTML=`
@@ -732,13 +751,11 @@ window.renderFinances = () => {
     <div class="stat-card"><div class="stat-label">Udgifter</div><div class="stat-value red">${fmt(exp)}</div></div>
     <div class="stat-card"><div class="stat-label">Resultat</div><div class="stat-value ${profit>=0?'green':'red'}">${fmt(profit)}</div></div>
   `;
-  // update month filter options
   const sel=document.getElementById('month-filter');
   const cur=sel.value;
   const months=[...new Set(finances.map(f=>f.date?.slice(0,7)).filter(Boolean))].sort().reverse();
   sel.innerHTML='<option value="all">Alle måneder</option>'+months.map(m=>`<option value="${m}">${formatMonth(m)}</option>`).join('');
   if(months.includes(cur))sel.value=cur;
-
   document.getElementById('finance-empty').style.display=fil.length?'none':'block';
   document.getElementById('finance-list').innerHTML=fil.map(f=>{
     const cust=f.customerId?customers.find(x=>x.id===f.customerId):null;
@@ -762,73 +779,53 @@ window.renderFinances = () => {
 };
 
 /* ── Doc upload ── */
-window.handleDrop = e => { e.preventDefault(); document.getElementById('drop-zone').classList.remove('dragover'); if(e.dataTransfer.files[0])loadDocFile(e.dataTransfer.files[0]); };
-window.handleFileSelect = input => { if(input.files[0])loadDocFile(input.files[0]); };
-function loadDocFile(file) {
+window.handleDrop=e=>{e.preventDefault();document.getElementById('drop-zone').classList.remove('dragover');if(e.dataTransfer.files[0])loadDocFile(e.dataTransfer.files[0]);};
+window.handleFileSelect=input=>{if(input.files[0])loadDocFile(input.files[0]);};
+function loadDocFile(file){
   if(file.size>5*1024*1024){alert('Maks 5 MB');return;}
   const r=new FileReader();
   r.onload=ev=>{tempDoc={name:file.name,size:file.size,type:file.type,data:ev.target.result};renderDocPreview();};
   r.readAsDataURL(file);
 }
-function renderDocPreview() {
+function renderDocPreview(){
   const label=document.getElementById('drop-label');
   const preview=document.getElementById('doc-preview');
   if(!tempDoc){label.style.display='';preview.style.display='none';preview.innerHTML='';return;}
-  label.style.display='none'; preview.style.display='block';
+  label.style.display='none';preview.style.display='block';
   preview.innerHTML=`<div class="doc-preview-inner"><div class="doc-icon-lg">${docIcon(tempDoc.type)}</div><div class="doc-info"><div class="doc-name">${tempDoc.name}</div><div class="doc-size">${(tempDoc.size/1024).toFixed(1)} KB</div></div><button class="doc-remove" onclick="clearDoc(event)">✕</button></div>`;
 }
-window.clearDoc = e => { if(e)e.stopPropagation(); tempDoc=null; document.getElementById('fin-doc').value=''; renderDocPreview(); };
-
-/* ── Doc view ── */
-window.viewDoc = id => {
-  const f=finances.find(x=>x.id===id); if(!f||!f.docName)return;
+window.clearDoc=e=>{if(e)e.stopPropagation();tempDoc=null;document.getElementById('fin-doc').value='';renderDocPreview();};
+window.viewDoc=id=>{
+  const f=finances.find(x=>x.id===id);if(!f||!f.docName)return;
   document.getElementById('doc-modal-title').textContent=f.docName;
-  const dl=document.getElementById('doc-dl-btn'); dl.href=f.docData; dl.download=f.docName;
+  const dl=document.getElementById('doc-dl-btn');dl.href=f.docData;dl.download=f.docName;
   let body='';
-  if(f.docType?.includes('image')) body=`<img src="${f.docData}" style="max-width:100%;border-radius:8px;display:block;margin:0 auto" alt="bilag">`;
-  else if(f.docType?.includes('pdf')) body=`<iframe src="${f.docData}" style="width:100%;height:360px;border:none;border-radius:10px" title="pdf"></iframe>`;
-  else body=`<div style="text-align:center;padding:32px;color:var(--muted)"><div style="font-size:48px;margin-bottom:10px">${docIcon(f.docType)}</div><div style="margin-bottom:14px;font-size:14px">${f.docName}</div></div>`;
+  if(f.docType?.includes('image'))body=`<img src="${f.docData}" style="max-width:100%;border-radius:8px;display:block;margin:0 auto" alt="bilag">`;
+  else if(f.docType?.includes('pdf'))body=`<iframe src="${f.docData}" style="width:100%;height:340px;border:none;border-radius:10px" title="pdf"></iframe>`;
+  else body=`<div style="text-align:center;padding:28px;color:var(--muted)"><div style="font-size:44px;margin-bottom:10px">${docIcon(f.docType)}</div><div style="margin-bottom:14px;font-size:14px">${f.docName}</div></div>`;
   document.getElementById('doc-modal-body').innerHTML=body;
   document.getElementById('doc-modal').classList.add('open');
 };
-window.closeDocModal = () => document.getElementById('doc-modal').classList.remove('open');
+window.closeDocModal=()=>document.getElementById('doc-modal').classList.remove('open');
 
 /* ════ CONFIRM DELETE ════ */
-window.confirmDelete = (id, type, desc, date, amt) => {
+window.confirmDelete=(id,type,desc,date,amt)=>{
   document.getElementById('conf-desc').textContent=desc;
   document.getElementById('conf-date').textContent=date;
   document.getElementById('conf-amt').textContent=amt;
   document.getElementById('conf-amt').style.color=type==='finance'?(amt.startsWith('+'))?'var(--green)':'var(--red)':'var(--accent)';
   document.getElementById('conf-ok').onclick=async()=>{
-    if(type==='customer'){
-      // delete all tasks and their payments
-      const cTasks=tasks.filter(t=>t.customerId===id);
-      for(const t of cTasks){
-        const tPays=payments.filter(p=>p.taskId===t.id);
-        for(const p of tPays) await deleteDoc(doc(db,'payments',p.id));
-        await deleteDoc(doc(db,'tasks',t.id));
-      }
-      await deleteDoc(doc(db,'customers',id));
-      toast('Kunde slettet');
-    } else if(type==='task'){
-      const tPays=payments.filter(p=>p.taskId===id);
-      for(const p of tPays) await deleteDoc(doc(db,'payments',p.id));
-      await deleteDoc(doc(db,'tasks',id));
-      toast('Opgave slettet');
-    } else if(type==='finance'){
-      await deleteDoc(doc(db,'finances',id));
-      toast('Post slettet');
-    }
+    if(type==='customer'){await deleteDoc(doc(db,'customers',id));toast('Kunde slettet');}
+    else if(type==='order'){await deleteDoc(doc(db,'orders',id));toast('Ordre slettet');}
+    else if(type==='finance'){await deleteDoc(doc(db,'finances',id));toast('Post slettet');}
     closeConfirm();
   };
   document.getElementById('confirm-modal').classList.add('open');
 };
-window.closeConfirm = () => document.getElementById('confirm-modal').classList.remove('open');
+window.closeConfirm=()=>document.getElementById('confirm-modal').classList.remove('open');
 
-/* ── Init defaults ── */
+/* init */
 document.getElementById('fin-date').value=today();
-document.getElementById('task-date').value=today();
-document.getElementById('pay-date').value=today();
 </script>
 </body>
 </html>

@@ -21,7 +21,26 @@
   --accent:#e8b84b;--accent2:#c9973a;--text:#f0f0f0;--muted:#777;
   --green:#2ecc71;--red:#e74c3c;--blue:#3498db;--purple:#8b85ff;
   --bottom-h:64px;
+  --shadow:none;
 }
+/* LIGHT THEME */
+body.light{
+  --bg:#f0f2f5;--surface:#ffffff;--card:#ffffff;--border:#e0e3e8;
+  --text:#1a1a1a;--muted:#888;--shadow:0 1px 4px rgba(0,0,0,.08);
+}
+body.light .topnav,body.light .bottomnav{box-shadow:0 1px 6px rgba(0,0,0,.08);}
+body.light .stat-card,body.light .card,body.light .cust-card,body.light .order-card,body.light .fin-card,body.light .pkg-card{box-shadow:var(--shadow);}
+body.light input,body.light select,body.light textarea{background:#f7f8fa;border-color:#dde0e6;color:var(--text);}
+body.light .modal{box-shadow:0 8px 40px rgba(0,0,0,.15);}
+body.light .btn-ghost{background:#e8eaed;color:#333;}
+body.light .btn-ghost:active{background:#d8dbe0;}
+body.light .spinner{border-color:#dde0e6;border-top-color:var(--accent);}
+/* theme toggle button */
+.theme-btn{background:none;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:14px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;font-weight:500;}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent);}
+/* mobile theme toggle inside bottomnav */
+.theme-btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;cursor:pointer;transition:color .2s;padding:0;}
+.theme-btab .bicon{font-size:20px;line-height:1;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
 body{padding-bottom:env(safe-area-inset-bottom);}
@@ -160,6 +179,19 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
 .toast{position:fixed;bottom:calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 .toast.show{opacity:1;}
 
+/* PACKAGE CARDS */
+.pkg-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.pkg-card.selectable{cursor:pointer;transition:border .15s,background .15s;}
+.pkg-card.selectable:hover{border-color:var(--accent);}
+.pkg-card.selected{border-color:var(--accent);background:rgba(232,184,75,.07);}
+.pkg-name{font-weight:600;font-size:14px;}
+.pkg-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.pkg-price{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+.pkg-actions{display:flex;gap:6px;margin-top:8px;}
+/* selected packages in order */
+.sel-pkg-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(232,184,75,.12);color:var(--accent);border:1px solid rgba(232,184,75,.3);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500;}
+.sel-pkg-chip .rm{cursor:pointer;opacity:.6;font-size:13px;}
+.sel-pkg-chip .rm:hover{opacity:1;color:var(--red);}
 /* STATUS FILTER PILLS */
 .pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
 .pill{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;min-height:34px;}
@@ -198,8 +230,10 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
       <button class="dtab active" onclick="showPage('dashboard',this)">📊 Oversigt</button>
       <button class="dtab" onclick="showPage('customers',this)">👤 Kunder</button>
       <button class="dtab" onclick="showPage('orders',this)">📋 Ordrer</button>
+      <button class="dtab" onclick="showPage('packages',this)">📦 Pakker</button>
       <button class="dtab" onclick="showPage('finance',this)">💰 Økonomi</button>
     </div>
+    <button class="theme-btn" id="theme-btn-desktop" onclick="toggleTheme()" style="margin-left:auto">🌙 Mørk</button>
   </nav>
 
   <!-- DASHBOARD -->
@@ -239,6 +273,16 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
     </div>
     <div id="order-list"></div>
     <div id="order-empty" class="empty-state" style="display:none"><span class="icon">📋</span><div>Ingen ordrer endnu</div></div>
+  </div>
+
+  <!-- PACKAGES -->
+  <div id="page-packages" class="page">
+    <h2>Pakker</h2>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn btn-primary btn-sm" onclick="openPkgModal(null)">＋ Ny pakke</button>
+    </div>
+    <div id="package-list"></div>
+    <div id="package-empty" class="empty-state" style="display:none"><span class="icon">📦</span><div>Ingen pakker endnu — opret din første</div></div>
   </div>
 
   <!-- FINANCE -->
@@ -305,7 +349,9 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
       <button class="btab active" id="btab-dashboard" onclick="showPageMobile('dashboard')"><span class="bicon">📊</span>Oversigt</button>
       <button class="btab" id="btab-customers"        onclick="showPageMobile('customers')"><span class="bicon">👤</span>Kunder</button>
       <button class="btab" id="btab-orders"           onclick="showPageMobile('orders')"><span class="bicon">📋</span>Ordrer</button>
+      <button class="btab" id="btab-packages"         onclick="showPageMobile('packages')"><span class="bicon">📦</span>Pakker</button>
       <button class="btab" id="btab-finance"          onclick="showPageMobile('finance')"><span class="bicon">💰</span>Økonomi</button>
+      <button class="theme-btab" id="theme-btn-mobile" onclick="toggleTheme()"><span class="bicon">🌙</span>Tema</button>
     </div>
   </div>
 </div><!-- end #app -->
@@ -330,10 +376,11 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
     <div class="divider"></div>
     <h3>🚗 Biler</h3>
     <div id="cars-chips" class="cars-list" style="margin-bottom:10px"></div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input id="car-input" type="text" placeholder="BMW 3-serie (KX 12 345)" style="flex:1" onkeydown="if(event.key==='Enter')addCar()">
-      <button class="btn btn-ghost btn-sm" onclick="addCar()">＋</button>
+    <div class="form-grid" style="margin-bottom:8px">
+      <div><label>Mærke + Model</label><input id="car-model" type="text" placeholder="BMW 3-serie 320d"></div>
+      <div><label>Nummerplade</label><input id="car-plate" type="text" placeholder="KX 12 345" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')addCar()"></div>
     </div>
+    <button class="btn btn-ghost btn-sm btn-full" onclick="addCar()">＋ Tilføj bil</button>
     <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <button class="btn btn-ghost" onclick="closeCustModal()">Annuller</button>
       <button class="btn btn-primary" onclick="saveCustomer()">Gem</button>
@@ -348,12 +395,27 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
     <div class="modal-header"><div class="modal-title" id="order-modal-title">Ny ordre</div><button class="close-btn" onclick="closeOrderModal()">✕</button></div>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div><label>Kunde</label>
-        <select id="o-customer">
+        <select id="o-customer" onchange="updateOrderCarDropdown()">
           <option value="">Vælg kunde…</option>
         </select>
       </div>
-      <div><label>Bilmodel</label><input id="o-car" type="text" placeholder="f.eks. BMW 3-serie, KX 12 345" autocomplete="off"></div>
-      <div class="form-full"><label>Beskrivelse af arbejde</label><textarea id="o-desc" placeholder="f.eks. Keramisk coating + polering"></textarea></div>
+      <div><label>Bil</label>
+        <select id="o-car">
+          <option value="">Vælg bil…</option>
+        </select>
+      </div>
+
+      <!-- Package picker -->
+      <div>
+        <label>Pakker <span style="text-transform:none;font-size:10px;color:var(--muted)">(vælg én eller flere)</span></label>
+        <div id="o-pkg-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+        <div id="o-pkg-selected" style="display:flex;flex-wrap:wrap;gap:6px;min-height:0"></div>
+      </div>
+
+      <div>
+        <label>Ekstra beskrivelse <span style="text-transform:none;font-size:10px;color:var(--muted)">(valgfrit)</span></label>
+        <textarea id="o-desc" placeholder="Tilføj ekstra detaljer…"></textarea>
+      </div>
       <div class="form-grid">
         <div><label>Beløb (DKK)</label><input id="o-amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0"></div>
         <div><label>Dato</label><input id="o-date" type="date"></div>
@@ -404,6 +466,25 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
   </div>
 </div>
 
+<!-- Package create/edit -->
+<div class="modal-overlay" id="pkg-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="pkg-modal-title">Ny pakke</div><button class="close-btn" onclick="closePkgModal()">✕</button></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div><label>Pakkenavn</label><input id="pkg-name" type="text" placeholder="f.eks. Fuld polering" autocomplete="off"></div>
+      <div><label>Pris (DKK)</label><input id="pkg-price" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0"></div>
+      <div><label>Beskrivelse <span style="text-transform:none;font-size:10px;color:var(--muted)">(hvad indgår)</span></label>
+        <textarea id="pkg-desc" placeholder="f.eks. Maskinpolering, voks, indvendig rengøring"></textarea>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="closePkgModal()">Annuller</button>
+      <button class="btn btn-primary" onclick="savePkg()">Gem pakke</button>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm delete -->
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal">
@@ -446,12 +527,13 @@ const db  = getFirestore(app);
 const custsCol   = collection(db,'customers');
 const ordersCol  = collection(db,'orders');
 const financesCol= collection(db,'finances');
+const pkgsCol    = collection(db,'packages');
 
-let customers=[], orders=[], finances=[];
-let loaded={c:false,o:false,f:false};
+let customers=[], orders=[], finances=[], packages=[];
+let loaded={c:false,o:false,f:false,p:false};
 
 function checkReady(){
-  if(loaded.c&&loaded.o&&loaded.f){
+  if(loaded.c&&loaded.o&&loaded.f&&loaded.p){
     document.getElementById('loading').style.display='none';
     document.getElementById('app').style.display='block';
     renderAll();
@@ -460,6 +542,7 @@ function checkReady(){
 onSnapshot(query(custsCol,  orderBy('createdAt')),      s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));loaded.c=true;checkReady();renderAll();});
 onSnapshot(query(ordersCol, orderBy('date','desc')),    s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));loaded.o=true;checkReady();renderAll();});
 onSnapshot(query(financesCol,orderBy('date','desc')),   s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));loaded.f=true;checkReady();renderAll();});
+onSnapshot(query(pkgsCol,   orderBy('createdAt')),      s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));loaded.p=true;checkReady();renderAll();});
 
 /* ── helpers ── */
 const fmt=n=>(Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:2})+' kr';
@@ -479,6 +562,8 @@ function renderAll(){
   if(custs?.classList.contains('active'))renderCustomers();
   const ords=document.getElementById('page-orders');
   if(ords?.classList.contains('active'))renderOrders();
+  const pkgs=document.getElementById('page-packages');
+  if(pkgs?.classList.contains('active'))renderPackages();
   const fin=document.getElementById('page-finance');
   if(fin?.classList.contains('active'))renderFinances();
 }
@@ -492,6 +577,7 @@ window.showPage=(id,btn)=>{
   if(id==='dashboard')renderDashboard();
   if(id==='customers')renderCustomers();
   if(id==='orders')   renderOrders();
+  if(id==='packages') renderPackages();
   if(id==='finance')  renderFinances();
 };
 window.showPageMobile=id=>{
@@ -502,6 +588,7 @@ window.showPageMobile=id=>{
   if(id==='dashboard')renderDashboard();
   if(id==='customers')renderCustomers();
   if(id==='orders')   renderOrders();
+  if(id==='packages') renderPackages();
   if(id==='finance')  renderFinances();
 };
 
@@ -552,7 +639,7 @@ window.renderCustomers=()=>{
         <div>
           <div class="cust-name">${c.firstname} ${c.lastname}</div>
           <div class="cust-meta">${[c.phone,c.email].filter(Boolean).join(' · ')}</div>
-          ${(c.cars||[]).length?`<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${(c.cars||[]).map(car=>`<span class="badge badge-orange">${car}</span>`).join('')}</div>`:''}
+          ${(c.cars||[]).length?`<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${(c.cars||[]).map(car=>`<span class="badge badge-orange">🚗 ${carLabel(car)}</span>`).join('')}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
           ${openAmt>0?`<div style="font-weight:700;color:var(--red);font-size:13px">${fmt(openAmt)}</div><div style="font-size:10px;color:var(--muted)">udestående</div>`
@@ -584,9 +671,25 @@ window.openCustModal=id=>{
   document.getElementById('cust-modal').classList.add('open');
 };
 window.closeCustModal=()=>document.getElementById('cust-modal').classList.remove('open');
-window.addCar=()=>{const v=document.getElementById('car-input').value.trim();if(!v)return;tempCars.push(v);document.getElementById('car-input').value='';renderCarChips();};
+window.addCar=()=>{
+  const model=document.getElementById('car-model').value.trim();
+  const plate=document.getElementById('car-plate').value.trim().toUpperCase();
+  if(!model&&!plate){alert('Udfyld mindst mærke/model eller nummerplade');return;}
+  tempCars.push({model,plate});
+  document.getElementById('car-model').value='';
+  document.getElementById('car-plate').value='';
+  renderCarChips();
+};
 window.removeTempCar=i=>{tempCars.splice(i,1);renderCarChips();};
-function renderCarChips(){document.getElementById('cars-chips').innerHTML=tempCars.map((c,i)=>`<div class="car-chip">${c}<span class="remove-car" onclick="removeTempCar(${i})">✕</span></div>`).join('');}
+function carLabel(c){
+  if(typeof c==='string')return c; // backwards compat with old string format
+  return[c.model,c.plate].filter(Boolean).join(' · ');
+}
+function renderCarChips(){
+  document.getElementById('cars-chips').innerHTML=tempCars.map((c,i)=>
+    `<div class="car-chip">🚗 ${carLabel(c)}<span class="remove-car" onclick="removeTempCar(${i})">✕</span></div>`
+  ).join('');
+}
 window.saveCustomer=async()=>{
   const fn=document.getElementById('c-fn').value.trim();
   if(!fn){alert('Fornavn er påkrævet');return;}
@@ -654,7 +757,8 @@ window.openOrderModal=id=>{
   // populate customer dropdown
   document.getElementById('o-customer').innerHTML='<option value="">Vælg kunde…</option>'+
     customers.map(c=>`<option value="${c.id}" ${o?.customerId===c.id?'selected':''}>${c.firstname} ${c.lastname}</option>`).join('');
-  document.getElementById('o-car').value=o?.carModel||'';
+  // populate car dropdown based on selected customer
+  updateOrderCarDropdown(o?.carModel||'');
   document.getElementById('o-desc').value=o?.description||'';
   document.getElementById('o-amount').value=o?.amount||'';
   document.getElementById('o-date').value=o?.date||today();
@@ -662,26 +766,192 @@ window.openOrderModal=id=>{
   document.getElementById('o-notes').value=o?.notes||'';
   document.getElementById('order-modal').classList.add('open');
 };
+window.updateOrderCarDropdown=(preselect='')=>{
+  const cid=document.getElementById('o-customer').value;
+  const c=customers.find(x=>x.id===cid);
+  const cars=c?.cars||[];
+  const sel=document.getElementById('o-car');
+  sel.innerHTML='<option value="">Vælg bil…</option>'+
+    cars.map(car=>{
+      const lbl=carLabel(car);
+      return`<option value="${lbl}" ${(preselect||'')===(lbl)?'selected':''}>${lbl}</option>`;
+    }).join('');
+  // also add a manual option
+  sel.innerHTML+='<option value="__manual__">✏️ Skriv selv…</option>';
+  // if preselect not found in list, add it
+  if(preselect && !cars.map(carLabel).includes(preselect)){
+    sel.innerHTML=`<option value="${preselect}" selected>${preselect}</option>`+sel.innerHTML;
+  }
+  // handle "write manually" selection
+  sel.onchange=()=>{
+    if(sel.value==='__manual__'){
+      const manual=prompt('Skriv bilmodel / nummerplade:');
+      if(manual){sel.innerHTML=`<option value="${manual}" selected>${manual}</option>`+sel.innerHTML.replace(`<option value="__manual__">✏️ Skriv selv…</option>`,'')+`<option value="__manual__">✏️ Skriv selv…</option>`;sel.value=manual;}
+      else sel.value='';
+    }
+  };
+};
 window.newOrderForCustomer=cid=>{
   openOrderModal(null);
-  setTimeout(()=>{ document.getElementById('o-customer').value=cid; },50);
+  setTimeout(()=>{
+    document.getElementById('o-customer').value=cid;
+    updateOrderCarDropdown();
+  },50);
 };
-window.closeOrderModal=()=>document.getElementById('order-modal').classList.remove('open');
+window.closeOrderModal=()=>{document.getElementById('order-modal').classList.remove('open');selectedPkgIds=[];};
+
+let selectedPkgIds=[];
+
+function renderOrderPkgPicker(){
+  // Package list to pick from
+  const listEl=document.getElementById('o-pkg-list');
+  const selEl=document.getElementById('o-pkg-selected');
+  if(!packages.length){
+    listEl.innerHTML='<div style="font-size:12px;color:var(--muted);padding:6px 0">Ingen pakker oprettet endnu — gå til Pakker-fanen for at oprette dem.</div>';
+  } else {
+    listEl.innerHTML=packages.map(p=>{
+      const sel=selectedPkgIds.includes(p.id);
+      return`<div class="pkg-card selectable${sel?' selected':''}" onclick="toggleOrderPkg('${p.id}')">
+        <div style="flex:1;min-width:0">
+          <div class="pkg-name">${p.name}</div>
+          ${p.description?`<div class="pkg-desc">${p.description}</div>`:''}
+        </div>
+        <div style="flex-shrink:0;text-align:right">
+          <div class="pkg-price">${fmt(p.price)}</div>
+          ${sel?'<div style="font-size:11px;color:var(--accent);margin-top:2px">✓ Valgt</div>':''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  // Selected chips + total
+  const selPkgs=packages.filter(p=>selectedPkgIds.includes(p.id));
+  const total=selPkgs.reduce((s,p)=>s+Number(p.price),0);
+  selEl.innerHTML=selPkgs.length
+    ?`<div style="width:100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:4px">
+        ${selPkgs.map(p=>`<span class="sel-pkg-chip">${p.name} · ${fmt(p.price)}<span class="rm" onclick="toggleOrderPkg('${p.id}')">✕</span></span>`).join('')}
+        <span style="margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent)">= ${fmt(total)}</span>
+      </div>`
+    :'';
+  // Auto-fill amount
+  if(selPkgs.length>0) document.getElementById('o-amount').value=total;
+}
+
+window.toggleOrderPkg=pid=>{
+  const i=selectedPkgIds.indexOf(pid);
+  if(i>=0) selectedPkgIds.splice(i,1); else selectedPkgIds.push(pid);
+  renderOrderPkgPicker();
+};
+
+let editOrderId=null;
+window.openOrderModal=id=>{
+  editOrderId=id||null;
+  selectedPkgIds=[];
+  const o=id?orders.find(x=>x.id===id):null;
+  document.getElementById('order-modal-title').textContent=o?'Rediger ordre':'Ny ordre';
+  document.getElementById('o-customer').innerHTML='<option value="">Vælg kunde…</option>'+
+    customers.map(c=>`<option value="${c.id}" ${o?.customerId===c.id?'selected':''}>${c.firstname} ${c.lastname}</option>`).join('');
+  updateOrderCarDropdown(o?.carModel||'');
+  // restore selected packages
+  if(o?.packageIds) selectedPkgIds=[...o.packageIds];
+  renderOrderPkgPicker();
+  document.getElementById('o-desc').value=o?.extraDesc||'';
+  document.getElementById('o-amount').value=o?.amount||'';
+  document.getElementById('o-date').value=o?.date||today();
+  document.getElementById('o-status').value=o?.status||'Afventer';
+  document.getElementById('o-notes').value=o?.notes||'';
+  document.getElementById('order-modal').classList.add('open');
+};
+window.updateOrderCarDropdown=(preselect='')=>{
+  const cid=document.getElementById('o-customer').value;
+  const c=customers.find(x=>x.id===cid);
+  const cars=c?.cars||[];
+  const sel=document.getElementById('o-car');
+  sel.innerHTML='<option value="">Vælg bil…</option>'+
+    cars.map(car=>{const lbl=carLabel(car);return`<option value="${lbl}" ${(preselect||'')===(lbl)?'selected':''}>${lbl}</option>`;}).join('');
+  sel.innerHTML+='<option value="__manual__">✏️ Skriv selv…</option>';
+  if(preselect && !cars.map(carLabel).includes(preselect)){
+    sel.innerHTML=`<option value="${preselect}" selected>${preselect}</option>`+sel.innerHTML;
+  }
+  sel.onchange=()=>{
+    if(sel.value==='__manual__'){
+      const manual=prompt('Skriv bilmodel / nummerplade:');
+      if(manual){sel.innerHTML=`<option value="${manual}" selected>${manual}</option>`+sel.innerHTML.replace(`<option value="__manual__">✏️ Skriv selv…</option>`,'')+`<option value="__manual__">✏️ Skriv selv…</option>`;sel.value=manual;}
+      else sel.value='';
+    }
+  };
+};
+window.newOrderForCustomer=cid=>{
+  openOrderModal(null);
+  setTimeout(()=>{document.getElementById('o-customer').value=cid;updateOrderCarDropdown();},50);
+};
+
 window.saveOrder=async()=>{
   const cid=document.getElementById('o-customer').value;
-  const desc=document.getElementById('o-desc').value.trim();
+  const extraDesc=document.getElementById('o-desc').value.trim();
   const amt=parseFloat(document.getElementById('o-amount').value);
   const date=document.getElementById('o-date').value;
   const status=document.getElementById('o-status').value;
+  const carVal=document.getElementById('o-car').value;
+  const carModel=(carVal==='__manual__'||carVal==='')?'':carVal;
   if(!cid){alert('Vælg en kunde');return;}
-  if(!desc){alert('Tilføj beskrivelse');return;}
+  if(selectedPkgIds.length===0&&!extraDesc){alert('Vælg mindst én pakke eller tilføj en beskrivelse');return;}
   if(!amt||amt<=0){alert('Ugyldigt beløb');return;}
   if(!date){alert('Vælg dato');return;}
-  const data={customerId:cid,carModel:document.getElementById('o-car').value.trim(),description:desc,amount:amt,date,status,notes:document.getElementById('o-notes').value.trim()};
+  // Build combined description from selected packages
+  const selPkgs=packages.filter(p=>selectedPkgIds.includes(p.id));
+  const pkgLine=selPkgs.map(p=>p.name).join(' + ');
+  const description=[pkgLine,extraDesc].filter(Boolean).join(' — ');
+  const data={customerId:cid,carModel,description,extraDesc,packageIds:[...selectedPkgIds],amount:amt,date,status,notes:document.getElementById('o-notes').value.trim()};
   if(editOrderId)await updateDoc(doc(db,'orders',editOrderId),data);
   else await addDoc(ordersCol,{...data,createdAt:serverTimestamp()});
   toast(editOrderId?'Ordre opdateret':'Ordre oprettet');
   window.closeOrderModal();
+};
+
+/* ════ PACKAGES ════ */
+function renderPackages(){
+  const empty=document.getElementById('package-empty');
+  const list=document.getElementById('package-list');
+  if(!packages.length){empty.style.display='block';list.innerHTML='';return;}
+  empty.style.display='none';
+  list.innerHTML=packages.map(p=>`
+    <div class="pkg-card">
+      <div style="flex:1;min-width:0">
+        <div class="pkg-name">${p.name}</div>
+        ${p.description?`<div class="pkg-desc">${p.description}</div>`:''}
+      </div>
+      <div style="flex-shrink:0;text-align:right">
+        <div class="pkg-price">${fmt(p.price)}</div>
+        <div class="pkg-actions" style="justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm" onclick="openPkgModal('${p.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p.id}','package','${p.name.replace(/'/g,'')}','','${fmt(p.price)}')">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+let editPkgId=null;
+window.openPkgModal=id=>{
+  editPkgId=id||null;
+  const p=id?packages.find(x=>x.id===id):null;
+  document.getElementById('pkg-modal-title').textContent=p?'Rediger pakke':'Ny pakke';
+  document.getElementById('pkg-name').value=p?.name||'';
+  document.getElementById('pkg-price').value=p?.price||'';
+  document.getElementById('pkg-desc').value=p?.description||'';
+  document.getElementById('pkg-modal').classList.add('open');
+};
+window.closePkgModal=()=>document.getElementById('pkg-modal').classList.remove('open');
+window.savePkg=async()=>{
+  const name=document.getElementById('pkg-name').value.trim();
+  const price=parseFloat(document.getElementById('pkg-price').value);
+  const description=document.getElementById('pkg-desc').value.trim();
+  if(!name){alert('Tilføj et pakkenavn');return;}
+  if(!price||price<=0){alert('Tilføj en pris');return;}
+  const data={name,price,description};
+  if(editPkgId)await updateDoc(doc(db,'packages',editPkgId),data);
+  else await addDoc(pkgsCol,{...data,createdAt:serverTimestamp()});
+  toast(editPkgId?'Pakke opdateret':'Pakke oprettet');
+  window.closePkgModal();
 };
 
 /* ── Order payment ── */
@@ -817,12 +1087,33 @@ window.confirmDelete=(id,type,desc,date,amt)=>{
   document.getElementById('conf-ok').onclick=async()=>{
     if(type==='customer'){await deleteDoc(doc(db,'customers',id));toast('Kunde slettet');}
     else if(type==='order'){await deleteDoc(doc(db,'orders',id));toast('Ordre slettet');}
+    else if(type==='package'){await deleteDoc(doc(db,'packages',id));toast('Pakke slettet');}
     else if(type==='finance'){await deleteDoc(doc(db,'finances',id));toast('Post slettet');}
     closeConfirm();
   };
   document.getElementById('confirm-modal').classList.add('open');
 };
 window.closeConfirm=()=>document.getElementById('confirm-modal').classList.remove('open');
+
+/* ── THEME ── */
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light');
+  localStorage.setItem('autocare_theme', isLight?'light':'dark');
+  updateThemeBtn(isLight);
+}
+function updateThemeBtn(isLight){
+  const label=isLight?'☀️ Lys':'🌙 Mørk';
+  const mobileIcon=isLight?'☀️':'🌙';
+  const d=document.getElementById('theme-btn-desktop');
+  const m=document.getElementById('theme-btn-mobile');
+  if(d)d.textContent=label;
+  if(m){m.querySelector('.bicon').textContent=mobileIcon;}
+}
+// Apply saved theme on load
+(()=>{
+  const saved=localStorage.getItem('autocare_theme');
+  if(saved==='light'){document.body.classList.add('light');updateThemeBtn(true);}
+})();
 
 /* init */
 document.getElementById('fin-date').value=today();

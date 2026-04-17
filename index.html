@@ -533,43 +533,15 @@ const pkgsCol    = collection(db,'packages');
 let customers=[], orders=[], finances=[], packages=[];
 let loaded={c:false,o:false,f:false,p:false};
 
-function checkReady(){
-  if(loaded.c&&loaded.o&&loaded.f&&loaded.p){
-    document.getElementById('loading').style.display='none';
-    document.getElementById('app').style.display='block';
-    renderAll();
-  }
-}
+// Start appen med det samme — data opdateres når Firebase svarer
+document.getElementById('loading').style.display='none';
+document.getElementById('app').style.display='block';
 
-function showLoadError(key, err){
-  const el=document.getElementById('load-status');
-  if(el) el.innerHTML+=`<div style="color:#e74c3c;font-size:12px;margin-top:4px">❌ Fejl (${key}): ${err?.code||err?.message||err}</div>`;
-  loaded[key]=true;
-  checkReady();
-}
-
-function markLoaded(key){
-  const el=document.getElementById('load-status');
-  if(el) el.innerHTML+=`<div style="color:#2ecc71;font-size:12px;margin-top:2px">✓ ${key} hentet</div>`;
-  loaded[key]=true;
-  checkReady();
-}
-
-const errHandler=key=>err=>{showLoadError(key,err);};
-onSnapshot(query(custsCol,  orderBy('createdAt')),   s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('c');renderAll();},errHandler('c'));
-onSnapshot(query(ordersCol, orderBy('date','desc')), s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('o');renderAll();},errHandler('o'));
-onSnapshot(query(financesCol,orderBy('date','desc')),s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('f');renderAll();},errHandler('f'));
-onSnapshot(query(pkgsCol,   orderBy('createdAt')),   s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('p');renderAll();},errHandler('p'));
-
-// Fallback: hvis siden ikke loader inden 10 sek, start alligevel
-setTimeout(()=>{
-  if(!Object.values(loaded).every(Boolean)){
-    const el=document.getElementById('load-status');
-    if(el) el.innerHTML+='<div style="color:#e8b84b;font-size:12px;margin-top:6px">⚠️ Timeout – starter alligevel…</div>';
-    Object.keys(loaded).forEach(k=>loaded[k]=true);
-    checkReady();
-  }
-},10000);
+const errHandler=key=>err=>{console.error('Firebase fejl ('+key+'):', err?.code||err?.message||err);};
+onSnapshot(query(custsCol,  orderBy('createdAt')),   s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));renderAll();},errHandler('c'));
+onSnapshot(query(ordersCol, orderBy('date','desc')), s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));renderAll();},errHandler('o'));
+onSnapshot(query(financesCol,orderBy('date','desc')),s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));renderAll();},errHandler('f'));
+onSnapshot(query(pkgsCol,   orderBy('createdAt')),   s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));renderAll();},errHandler('p'));
 
 /* ── helpers ── */
 const fmt=n=>(Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:2})+' kr';
@@ -776,55 +748,6 @@ function renderOrders(){
   }).join('');
 }
 
-let editOrderId=null;
-window.openOrderModal=id=>{
-  editOrderId=id||null;
-  const o=id?orders.find(x=>x.id===id):null;
-  document.getElementById('order-modal-title').textContent=o?'Rediger ordre':'Ny ordre';
-  // populate customer dropdown
-  document.getElementById('o-customer').innerHTML='<option value="">Vælg kunde…</option>'+
-    customers.map(c=>`<option value="${c.id}" ${o?.customerId===c.id?'selected':''}>${c.firstname} ${c.lastname}</option>`).join('');
-  // populate car dropdown based on selected customer
-  updateOrderCarDropdown(o?.carModel||'');
-  document.getElementById('o-desc').value=o?.description||'';
-  document.getElementById('o-amount').value=o?.amount||'';
-  document.getElementById('o-date').value=o?.date||today();
-  document.getElementById('o-status').value=o?.status||'Afventer';
-  document.getElementById('o-notes').value=o?.notes||'';
-  document.getElementById('order-modal').classList.add('open');
-};
-window.updateOrderCarDropdown=(preselect='')=>{
-  const cid=document.getElementById('o-customer').value;
-  const c=customers.find(x=>x.id===cid);
-  const cars=c?.cars||[];
-  const sel=document.getElementById('o-car');
-  sel.innerHTML='<option value="">Vælg bil…</option>'+
-    cars.map(car=>{
-      const lbl=carLabel(car);
-      return`<option value="${lbl}" ${(preselect||'')===(lbl)?'selected':''}>${lbl}</option>`;
-    }).join('');
-  // also add a manual option
-  sel.innerHTML+='<option value="__manual__">✏️ Skriv selv…</option>';
-  // if preselect not found in list, add it
-  if(preselect && !cars.map(carLabel).includes(preselect)){
-    sel.innerHTML=`<option value="${preselect}" selected>${preselect}</option>`+sel.innerHTML;
-  }
-  // handle "write manually" selection
-  sel.onchange=()=>{
-    if(sel.value==='__manual__'){
-      const manual=prompt('Skriv bilmodel / nummerplade:');
-      if(manual){sel.innerHTML=`<option value="${manual}" selected>${manual}</option>`+sel.innerHTML.replace(`<option value="__manual__">✏️ Skriv selv…</option>`,'')+`<option value="__manual__">✏️ Skriv selv…</option>`;sel.value=manual;}
-      else sel.value='';
-    }
-  };
-};
-window.newOrderForCustomer=cid=>{
-  openOrderModal(null);
-  setTimeout(()=>{
-    document.getElementById('o-customer').value=cid;
-    updateOrderCarDropdown();
-  },50);
-};
 window.closeOrderModal=()=>{document.getElementById('order-modal').classList.remove('open');selectedPkgIds=[];};
 
 let selectedPkgIds=[];

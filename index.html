@@ -218,7 +218,8 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
 
 <div id="loading" class="spinner-wrap">
   <div class="spinner"></div>
-  <div style="color:var(--muted);font-size:14px">Forbinder til database…</div>
+  <div style="color:var(--muted);font-size:14px;margin-bottom:8px">Forbinder til database…</div>
+  <div id="load-status" style="text-align:center;max-width:300px"></div>
 </div>
 
 <div id="app" style="display:none">
@@ -539,15 +540,32 @@ function checkReady(){
     renderAll();
   }
 }
-const errHandler=key=>err=>{console.warn(key,err);loaded[key]=true;checkReady();};
-onSnapshot(query(custsCol,  orderBy('createdAt')),   s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));loaded.c=true;checkReady();renderAll();},errHandler('c'));
-onSnapshot(query(ordersCol, orderBy('date','desc')), s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));loaded.o=true;checkReady();renderAll();},errHandler('o'));
-onSnapshot(query(financesCol,orderBy('date','desc')),s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));loaded.f=true;checkReady();renderAll();},errHandler('f'));
-onSnapshot(query(pkgsCol,   orderBy('createdAt')),   s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));loaded.p=true;checkReady();renderAll();},errHandler('p'));
+
+function showLoadError(key, err){
+  const el=document.getElementById('load-status');
+  if(el) el.innerHTML+=`<div style="color:#e74c3c;font-size:12px;margin-top:4px">❌ Fejl (${key}): ${err?.code||err?.message||err}</div>`;
+  loaded[key]=true;
+  checkReady();
+}
+
+function markLoaded(key){
+  const el=document.getElementById('load-status');
+  if(el) el.innerHTML+=`<div style="color:#2ecc71;font-size:12px;margin-top:2px">✓ ${key} hentet</div>`;
+  loaded[key]=true;
+  checkReady();
+}
+
+const errHandler=key=>err=>{showLoadError(key,err);};
+onSnapshot(query(custsCol,  orderBy('createdAt')),   s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('c');renderAll();},errHandler('c'));
+onSnapshot(query(ordersCol, orderBy('date','desc')), s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('o');renderAll();},errHandler('o'));
+onSnapshot(query(financesCol,orderBy('date','desc')),s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('f');renderAll();},errHandler('f'));
+onSnapshot(query(pkgsCol,   orderBy('createdAt')),   s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));markLoaded('p');renderAll();},errHandler('p'));
 
 // Fallback: hvis siden ikke loader inden 10 sek, start alligevel
 setTimeout(()=>{
   if(!Object.values(loaded).every(Boolean)){
+    const el=document.getElementById('load-status');
+    if(el) el.innerHTML+='<div style="color:#e8b84b;font-size:12px;margin-top:6px">⚠️ Timeout – starter alligevel…</div>';
     Object.keys(loaded).forEach(k=>loaded[k]=true);
     checkReady();
   }

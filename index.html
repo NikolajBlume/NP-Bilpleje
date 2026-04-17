@@ -539,10 +539,19 @@ function checkReady(){
     renderAll();
   }
 }
-onSnapshot(query(custsCol,  orderBy('createdAt')),      s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));loaded.c=true;checkReady();renderAll();});
-onSnapshot(query(ordersCol, orderBy('date','desc')),    s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));loaded.o=true;checkReady();renderAll();});
-onSnapshot(query(financesCol,orderBy('date','desc')),   s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));loaded.f=true;checkReady();renderAll();});
-onSnapshot(query(pkgsCol,   orderBy('createdAt')),      s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));loaded.p=true;checkReady();renderAll();});
+const errHandler=key=>err=>{console.warn(key,err);loaded[key]=true;checkReady();};
+onSnapshot(query(custsCol,  orderBy('createdAt')),   s=>{customers=s.docs.map(d=>({id:d.id,...d.data()}));loaded.c=true;checkReady();renderAll();},errHandler('c'));
+onSnapshot(query(ordersCol, orderBy('date','desc')), s=>{orders   =s.docs.map(d=>({id:d.id,...d.data()}));loaded.o=true;checkReady();renderAll();},errHandler('o'));
+onSnapshot(query(financesCol,orderBy('date','desc')),s=>{finances =s.docs.map(d=>({id:d.id,...d.data()}));loaded.f=true;checkReady();renderAll();},errHandler('f'));
+onSnapshot(query(pkgsCol,   orderBy('createdAt')),   s=>{packages =s.docs.map(d=>({id:d.id,...d.data()}));loaded.p=true;checkReady();renderAll();},errHandler('p'));
+
+// Fallback: hvis siden ikke loader inden 10 sek, start alligevel
+setTimeout(()=>{
+  if(!Object.values(loaded).every(Boolean)){
+    Object.keys(loaded).forEach(k=>loaded[k]=true);
+    checkReady();
+  }
+},10000);
 
 /* ── helpers ── */
 const fmt=n=>(Number(n)||0).toLocaleString('da-DK',{minimumFractionDigits:0,maximumFractionDigits:2})+' kr';

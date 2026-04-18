@@ -534,6 +534,30 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
   </div>
 </div>
 
+<!-- ═══════════════════ TEMA SCRIPT ═══════════════════ -->
+<script>
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light');
+  localStorage.setItem('autocare_theme', isLight?'light':'dark');
+  updateThemeBtn(isLight);
+}
+function updateThemeBtn(isLight){
+  const d=document.getElementById('theme-btn-desktop');
+  const m=document.getElementById('theme-btn-mobile');
+  if(d) d.textContent=isLight?'☀️ Lys':'🌙 Mørk';
+  if(m){ const b=m.querySelector('.bicon'); if(b) b.textContent=isLight?'☀️':'🌙'; }
+}
+// Anvend gemt tema med det samme
+(function(){
+  const saved=localStorage.getItem('autocare_theme');
+  if(saved==='light'){ document.body.classList.add('light'); }
+  // Opdater knap-tekst når DOM er klar
+  document.addEventListener('DOMContentLoaded', function(){
+    updateThemeBtn(document.body.classList.contains('light'));
+  });
+})();
+</script>
+
 <!-- ═══════════════════ FIREBASE + SCRIPT ═══════════════════ -->
 <script type="module">
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -1093,25 +1117,6 @@ window.confirmDelete=(id,type,desc,date,amt)=>{
 window.closeConfirm=()=>document.getElementById('confirm-modal').classList.remove('open');
 
 /* ── THEME ── */
-window.toggleTheme=function(){
-  const isLight=document.body.classList.toggle('light');
-  localStorage.setItem('autocare_theme', isLight?'light':'dark');
-  updateThemeBtn(isLight);
-}
-function updateThemeBtn(isLight){
-  const label=isLight?'☀️ Lys':'🌙 Mørk';
-  const mobileIcon=isLight?'☀️':'🌙';
-  const d=document.getElementById('theme-btn-desktop');
-  const m=document.getElementById('theme-btn-mobile');
-  if(d)d.textContent=label;
-  if(m){m.querySelector('.bicon').textContent=mobileIcon;}
-}
-// Apply saved theme on load
-(()=>{
-  const saved=localStorage.getItem('autocare_theme');
-  if(saved==='light'){document.body.classList.add('light');updateThemeBtn(true);}
-})();
-
 /* init */
 document.getElementById('fin-date').value=today();
 </script>

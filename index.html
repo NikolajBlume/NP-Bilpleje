@@ -922,10 +922,36 @@ window.saveOrder=async()=>{
   const selPkgs=packages.filter(p=>selectedPkgIds.includes(p.id));
   const pkgLine=selPkgs.map(p=>p.name).join(' + ');
   const description=[pkgLine,extraDesc].filter(Boolean).join(' — ');
+  const oldOrder=editOrderId?orders.find(x=>x.id===editOrderId):null;
+  const wasAlreadyPaid=oldOrder?.status==='Betalt';
   const data={customerId:cid,carModel,description,extraDesc,packageIds:[...selectedPkgIds],amount:amt,date,status,notes:document.getElementById('o-notes').value.trim()};
-  if(editOrderId)await updateDoc(doc(db,'orders',editOrderId),data);
-  else await addDoc(ordersCol,{...data,createdAt:serverTimestamp()});
-  toast(editOrderId?'Ordre opdateret':'Ordre oprettet');
+  let savedOrderId=editOrderId;
+  if(editOrderId){
+    await updateDoc(doc(db,'orders',editOrderId),data);
+  } else {
+    const ref=await addDoc(ordersCol,{...data,createdAt:serverTimestamp()});
+    savedOrderId=ref.id;
+  }
+  // Opret økonomipost automatisk hvis status er Betalt og ikke allerede oprettet
+  if(status==='Betalt'&&!wasAlreadyPaid){
+    const c=customers.find(x=>x.id===cid);
+    const custName=c?c.firstname+' '+c.lastname:'';
+    await addDoc(financesCol,{
+      type:'income',
+      description:'Betaling – '+description,
+      amount:amt,
+      date,
+      category:'Betaling fra kunde',
+      payment:'',
+      customerId:cid,
+      orderId:savedOrderId,
+      docName:'',docType:'',docData:'',
+      createdAt:serverTimestamp()
+    });
+    toast('Ordre gemt og indtægt oprettet i Økonomi ✓');
+  } else {
+    toast(editOrderId?'Ordre opdateret':'Ordre oprettet');
+  }
   window.closeOrderModal();
 };
 

@@ -179,6 +179,12 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
 .toast{position:fixed;bottom:calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 .toast.show{opacity:1;}
 
+/* PACKAGE QUICK-SELECT on orders page */
+.pkg-quick-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border .15s,background .15s;display:flex;flex-direction:column;gap:4px;}
+.pkg-quick-card:hover{border-color:var(--accent);background:rgba(232,184,75,.06);}
+.pkg-quick-name{font-weight:600;font-size:14px;}
+.pkg-quick-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.pkg-quick-price{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);margin-top:4px;}
 /* PACKAGE CARDS */
 .pkg-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
 .pkg-card.selectable{cursor:pointer;transition:border .15s,background .15s;}
@@ -262,15 +268,27 @@ textarea{resize:vertical;min-height:56px;font-size:15px;}
   <div id="page-orders" class="page">
     <h2>Ordrer</h2>
     <div class="stats-row" id="order-stats"></div>
+
+    <!-- Package quick-select -->
+    <div class="card" id="pkg-quickselect" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 style="margin:0">📦 Vælg pakke til ny ordre</h3>
+        <button class="btn btn-primary btn-sm" onclick="openOrderModal(null)">＋ Tilpasset ordre</button>
+      </div>
+      <div id="pkg-quicklist" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px"></div>
+      <div id="pkg-quickempty" style="display:none;color:var(--muted);font-size:13px;padding:8px 0">
+        Ingen pakker endnu — <button onclick="showPage('packages',document.querySelector('.dtab:nth-child(4)'));showPageMobile('packages')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;text-decoration:underline;padding:0">opret pakker her</button>
+      </div>
+    </div>
+
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="pill-row" id="status-pills" style="margin-bottom:0">
-        <button class="pill active" data-status="all"    onclick="setOrderFilter('all',this)">Alle</button>
-        <button class="pill" data-status="Afventer"      onclick="setOrderFilter('Afventer',this)">⏳ Afventer</button>
-        <button class="pill" data-status="I gang"        onclick="setOrderFilter('I gang',this)">🔧 I gang</button>
-        <button class="pill" data-status="Færdig"        onclick="setOrderFilter('Færdig',this)">✅ Færdig</button>
-        <button class="pill" data-status="Betalt"        onclick="setOrderFilter('Betalt',this)">💚 Betalt</button>
+        <button class="pill active" onclick="setOrderFilter('all',this)">Alle</button>
+        <button class="pill" onclick="setOrderFilter('Afventer',this)">⏳ Afventer</button>
+        <button class="pill" onclick="setOrderFilter('I gang',this)">🔧 I gang</button>
+        <button class="pill" onclick="setOrderFilter('Færdig',this)">✅ Færdig</button>
+        <button class="pill" onclick="setOrderFilter('Betalt',this)">💚 Betalt</button>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="openOrderModal(null)" style="white-space:nowrap;margin-left:8px">＋ Ny ordre</button>
     </div>
     <div id="order-list"></div>
     <div id="order-empty" class="empty-state" style="display:none"><span class="icon">📋</span><div>Ingen ordrer endnu</div></div>
@@ -560,7 +578,7 @@ function renderAll(){
   const custs=document.getElementById('page-customers');
   if(custs?.classList.contains('active'))renderCustomers();
   const ords=document.getElementById('page-orders');
-  if(ords?.classList.contains('active'))renderOrders();
+  if(ords?.classList.contains('active')){renderOrders();renderOrderQuickPkgs();}
   const pkgs=document.getElementById('page-packages');
   if(pkgs?.classList.contains('active'))renderPackages();
   const fin=document.getElementById('page-finance');
@@ -699,6 +717,34 @@ window.saveCustomer=async()=>{
   window.closeCustModal();
 };
 
+function renderOrderQuickPkgs(){
+  const list=document.getElementById('pkg-quicklist');
+  const empty=document.getElementById('pkg-quickempty');
+  if(!list) return;
+  if(!packages.length){
+    list.innerHTML=''; list.style.display='none'; empty.style.display='block'; return;
+  }
+  list.style.display='grid'; empty.style.display='none';
+  list.innerHTML=packages.map(p=>`
+    <div class="pkg-quick-card" onclick="openOrderModalWithPkg('${p.id}')">
+      <div class="pkg-quick-name">${p.name}</div>
+      ${p.description?`<div class="pkg-quick-desc">${p.description}</div>`:''}
+      <div class="pkg-quick-price">${fmt(p.price)}</div>
+    </div>
+  `).join('');
+}
+
+window.openOrderModalWithPkg=pid=>{
+  openOrderModal(null);
+  // Pre-select the package after modal opens
+  setTimeout(()=>{
+    if(!selectedPkgIds.includes(pid)){
+      selectedPkgIds.push(pid);
+      renderOrderPkgPicker();
+    }
+  },50);
+};
+
 /* ════ ORDERS ════ */
 let orderFilter='all';
 window.setOrderFilter=(status,btn)=>{
@@ -709,6 +755,7 @@ window.setOrderFilter=(status,btn)=>{
 };
 
 function renderOrders(){
+  renderOrderQuickPkgs();
   const fil=orderFilter==='all'?orders:orders.filter(o=>o.status===orderFilter);
   // stats
   const total=orders.length;
@@ -1046,7 +1093,7 @@ window.confirmDelete=(id,type,desc,date,amt)=>{
 window.closeConfirm=()=>document.getElementById('confirm-modal').classList.remove('open');
 
 /* ── THEME ── */
-function toggleTheme(){
+window.toggleTheme=function(){
   const isLight=document.body.classList.toggle('light');
   localStorage.setItem('autocare_theme', isLight?'light':'dark');
   updateThemeBtn(isLight);

@@ -1136,11 +1136,35 @@ window.confirmDelete=(id,type,desc,date,amt)=>{
   document.getElementById('conf-amt').textContent=amt;
   document.getElementById('conf-amt').style.color=type==='finance'?(amt.startsWith('+'))?'var(--green)':'var(--red)':'var(--accent)';
   document.getElementById('conf-ok').onclick=async()=>{
-    if(type==='customer'){await deleteDoc(doc(db,'customers',id));toast('Kunde slettet');}
-    else if(type==='order'){await deleteDoc(doc(db,'orders',id));toast('Ordre slettet');}
-    else if(type==='package'){await deleteDoc(doc(db,'packages',id));toast('Pakke slettet');}
-    else if(type==='finance'){await deleteDoc(doc(db,'finances',id));toast('Post slettet');}
+    if(type==='customer'){
+      await deleteDoc(doc(db,'customers',id));
+      customers=customers.filter(x=>x.id!==id);
+      toast('Kunde slettet');
+    }
+    else if(type==='order'){
+      // Slet tilknyttede økonomi-poster
+      const linkedFins=finances.filter(f=>f.orderId===id);
+      for(const f of linkedFins){
+        await deleteDoc(doc(db,'finances',f.id));
+      }
+      await deleteDoc(doc(db,'orders',id));
+      // Opdater lokale arrays med det samme
+      orders=orders.filter(x=>x.id!==id);
+      finances=finances.filter(f=>f.orderId!==id);
+      toast('Ordre og tilhørende betaling slettet');
+    }
+    else if(type==='package'){
+      await deleteDoc(doc(db,'packages',id));
+      packages=packages.filter(x=>x.id!==id);
+      toast('Pakke slettet');
+    }
+    else if(type==='finance'){
+      await deleteDoc(doc(db,'finances',id));
+      finances=finances.filter(x=>x.id!==id);
+      toast('Post slettet');
+    }
     closeConfirm();
+    renderAll();
   };
   document.getElementById('confirm-modal').classList.add('open');
 };

@@ -24,7 +24,7 @@
   --shadow:none;
 }
 /* LIGHT THEME */
-body.light{
+body.light, html:has(body.light){
   --bg:#f0f2f5;--surface:#ffffff;--card:#ffffff;--border:#e0e3e8;
   --text:#1a1a1a;--muted:#888;--shadow:0 1px 4px rgba(0,0,0,.08);
 }
@@ -42,8 +42,8 @@ body.light .spinner{border-color:#dde0e6;border-top-color:var(--accent);}
 .theme-btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;cursor:pointer;transition:color .2s;padding:0;}
 .theme-btab .bicon{font-size:20px;line-height:1;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
-body{padding-bottom:env(safe-area-inset-bottom);}
+html,body{height:100%;min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+body{padding-bottom:env(safe-area-inset-bottom);min-height:100vh;}
 
 /* NAV */
 .topnav{display:none;align-items:center;gap:6px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;position:sticky;top:0;z-index:90;}
@@ -935,7 +935,6 @@ window.saveOrder=async()=>{
   // Opret økonomipost automatisk hvis status er Betalt og ikke allerede oprettet
   if(status==='Betalt'&&!wasAlreadyPaid){
     const c=customers.find(x=>x.id===cid);
-    const custName=c?c.firstname+' '+c.lastname:'';
     await addDoc(financesCol,{
       type:'income',
       description:'Betaling – '+description,
@@ -953,6 +952,7 @@ window.saveOrder=async()=>{
     toast(editOrderId?'Ordre opdateret':'Ordre oprettet');
   }
   window.closeOrderModal();
+  renderAll();
 };
 
 /* ════ PACKAGES ════ */
@@ -1022,14 +1022,18 @@ window.confirmOrderPayment=async()=>{
   if(!amt||amt<=0){alert('Ugyldigt beløb');return;}
   if(!date){alert('Vælg dato');return;}
   const method=(document.querySelector('#order-pay-modal .pay-btn.active')||{}).dataset?.val||'MobilePay';
-  const c=customers.find(x=>x.id===o.customerId);
-  const custName=c?c.firstname+' '+c.lastname:'';
-  // mark order as paid
+  // Opdater lokalt array med det samme
+  const orderIdx=orders.findIndex(x=>x.id===payingOrderId);
+  if(orderIdx>=0) orders[orderIdx]={...orders[orderIdx],status:'Betalt',paidDate:date,paidMethod:method};
+  const newFinId='local_'+Date.now();
+  const newFin={id:newFinId,type:'income',description:`Betaling – ${o.description}`,amount:amt,date,category:'Betaling fra kunde',payment:method,customerId:o.customerId,orderId:payingOrderId,docName:'',docType:'',docData:''};
+  finances.unshift(newFin);
+  // Gem til Firebase
   await updateDoc(doc(db,'orders',payingOrderId),{status:'Betalt',paidDate:date,paidMethod:method});
-  // log income in finances
-  await addDoc(financesCol,{type:'income',description:`Betaling – ${o.description}`,amount:amt,date,category:'Betaling fra kunde',payment:method,customerId:o.customerId,orderId:payingOrderId,docName:'',docType:'',docData:'',createdAt:serverTimestamp()});
-  toast('Betaling registreret – ordre markeret som Betalt');
+  await addDoc(financesCol,{...newFin,id:undefined,createdAt:serverTimestamp()});
+  toast('Betaling registreret – ordre markeret som Betalt ✓');
   window.closeOrderPayModal();
+  renderAll();
 };
 
 /* ════ FINANCE ════ */

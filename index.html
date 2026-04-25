@@ -561,7 +561,7 @@ function updateThemeBtn(isLight){
 <!-- ═══════════════════ FIREBASE + SCRIPT ═══════════════════ -->
 <script type="module">
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, onSnapshot, query, orderBy, where, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const app = initializeApp(FIREBASE_CONFIG);
@@ -1142,10 +1142,10 @@ window.confirmDelete=(id,type,desc,date,amt)=>{
       toast('Kunde slettet');
     }
     else if(type==='order'){
-      // Slet tilknyttede økonomi-poster
-      const linkedFins=finances.filter(f=>f.orderId===id);
-      for(const f of linkedFins){
-        await deleteDoc(doc(db,'finances',f.id));
+      // Hent og slet alle økonomi-poster direkte fra Firebase
+      const linkedSnap=await getDocs(query(financesCol,where('orderId','==',id)));
+      for(const d of linkedSnap.docs){
+        await deleteDoc(doc(db,'finances',d.id));
       }
       await deleteDoc(doc(db,'orders',id));
       // Opdater lokale arrays med det samme
